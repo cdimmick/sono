@@ -38,6 +38,8 @@ class DeviseCreateUsers < ActiveRecord::Migration[5.2]
       t.string :phone
       t.string :phone2
 
+      t.boolean :active, default: true
+
       t.timestamps null: false
     end
 

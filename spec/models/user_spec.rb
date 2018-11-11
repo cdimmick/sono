@@ -8,10 +8,13 @@ describe User, type: :model do
   end
 
   describe 'Associations' do
-    it{ should belong_to(:facility).inverse_of('Admins') }
+    it{ should belong_to(:facility).inverse_of(:admins) }
 
     it{ should have_many :patronages }
     it{ should have_many(:facilities).through(:patronages) }
+
+    it{ should have_many(:events) }
+    it{ should have_many(:events).inverse_of(:admin) }
   end
 
   describe 'Validations' do
@@ -26,6 +29,10 @@ describe User, type: :model do
   describe 'Attributes' do
     specify ':role should default to "user"' do
       @user.role.should == 'user'
+    end
+
+    specify ':active should default to true' do
+      @user.active.should == true
     end
   end
 end

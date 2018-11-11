@@ -15,12 +15,6 @@ RSpec.configure do |config|
     c.syntax = [:should, :expect]
   end
 
-  config.include FactoryBot::Syntax::Methods
-
-  config.include(Shoulda::Matchers::ActiveModel, type: :model)
-  config.include(Shoulda::Matchers::ActiveRecord, type: :model)
-
-
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
