@@ -1,22 +1,44 @@
 <%= form_with(model: facility, local: true) do |form| %>
-  <% if facility.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(facility.errors.count, "error") %> prohibited this facility from being saved:</h2>
+  <div class="row">
+    <div class="col-xs-12">
+      <% if facility.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(facility.errors.count, "error") %> prohibited this facility from being saved:</h2>
 
-      <ul>
-      <% facility.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
+          <ul>
+            <% facility.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
       <% end %>
-      </ul>
     </div>
-  <% end %>
-
-  <div class="field">
-    <%= form.label :name %>
-    <%= form.text_field :name %>
   </div>
 
-  <div class="actions">
-    <%= form.submit %>
+  <div class="row">
+    <div class="col-sm-8">
+      <div class="form-group">
+        <%= form.label :name %>
+        <%= form.text_field :name, class: 'form-control' %>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="form-group">
+        <%= form.label :phone %>
+        <%= form.phone_field :phone, class: 'form-control' %>
+      </div>
+    </div>
+  </div>
+
+  <%= form.fields_for :address do |address_fields| %>
+    <%= render partial: 'addresses/form', locals: {f: address_fields} %>
+  <% end %>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form-group">
+        <%= form.submit class: 'btn btn-primary' %>
+      </div>
+    </div>
   </div>
 <% end %>

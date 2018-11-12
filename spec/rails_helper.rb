@@ -23,6 +23,8 @@ RSpec.configure do |config|
   config.include(Shoulda::Matchers::ActiveModel, type: :model)
   config.include(Shoulda::Matchers::ActiveRecord, type: :model)
 
+  # config.extend(Shoulda::Matchers::ApplicationController, type: :controller)
+
   config.include(FeaturesHelper, type: :feature)
 
   config.include Devise::Test::ControllerHelpers, :type => :controller

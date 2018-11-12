@@ -1,28 +1,22 @@
 class FacilitiesController < ApplicationController
+  before_action :authenticate_super_admin!, only: [:new, :create, :edit, :update]
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
 
-  # GET /facilities
-  # GET /facilities.json
   def index
     @facilities = Facility.all
   end
 
-  # GET /facilities/1
-  # GET /facilities/1.json
   def show
   end
 
-  # GET /facilities/new
   def new
     @facility = Facility.new
+    @facility.build_address
   end
 
-  # GET /facilities/1/edit
   def edit
   end
 
-  # POST /facilities
-  # POST /facilities.json
   def create
     @facility = Facility.new(facility_params)
 
@@ -37,8 +31,6 @@ class FacilitiesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /facilities/1
-  # PATCH/PUT /facilities/1.json
   def update
     respond_to do |format|
       if @facility.update(facility_params)
@@ -51,8 +43,6 @@ class FacilitiesController < ApplicationController
     end
   end
 
-  # DELETE /facilities/1
-  # DELETE /facilities/1.json
   def destroy
     @facility.destroy
     respond_to do |format|
@@ -62,13 +52,17 @@ class FacilitiesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_facility
-      @facility = Facility.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def facility_params
-      params.require(:facility).permit(:name)
-    end
+  def set_facility
+    @facility = Facility.find(params[:id])
+  end
+
+  def facility_params
+    params.require(:facility).permit(
+      :name, :phone,
+      address_attributes: [
+        :street, :street2, :street3, :number, :city, :state, :zip
+      ]
+    )
+  end
 end

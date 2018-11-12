@@ -35,4 +35,19 @@ describe User, type: :model do
       @user.active.should == true
     end
   end
+
+  describe 'Methods' do
+    describe '#can?(role)' do
+      it 'should return true if user.role is greater than role param' do
+        @user.can?('user').should == true
+        @user.can?('admin').should == false
+
+        @admin.can?('user').should == true
+        @admin.can?('admin').should == true
+        @admin.can?('super_admin').should == false
+
+        @super_admin.can?('super_admin').should == true
+      end
+    end
+  end
 end

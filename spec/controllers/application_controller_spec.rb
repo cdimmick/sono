@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe ApplicationController, type: :controller do
   before do
-    @request.env["devise.mapping"] = Devise.mappings[:user]
+    # @request.env["devise.mapping"] = Devise.mappings[:user]
   end
 
   describe 'Methods' do
@@ -48,6 +48,27 @@ describe ApplicationController, type: :controller do
       it 'should return user for super_admin' do
         sign_in create(:super_admin)
         controller.user_role.should == 'super_admin'
+      end
+    end
+
+    describe '#user_can?(role)' do
+      # Also in UserHelper
+      it 'should return false if user is not signed in' do
+        controller.user_can?('user').should == false
+      end
+
+      it 'should return false if user.role is greater than or equal to role param' do
+        sign_in create(:admin)
+        controller.user_can?('user').should == true
+        controller.user_can?('admin').should == true
+        controller.user_can?('super_admin').should == false
+      end
+
+      specify 'super_admins can always' do
+        sign_in create(:super_admin)
+        controller.user_can?('user').should == true
+        controller.user_can?('admin').should == true
+        controller.user_can?('super_admin').should == true
       end
     end
   end

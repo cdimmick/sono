@@ -6,4 +6,12 @@ module FeaturesHelper
     click_button 'Log in'
     user
   end
+
+  def facility_min
+    attrs = attributes_for(:facility)
+
+    fill_in 'facility_name', with: attrs[:name]
+
+    attrs
+  end
 end
