@@ -29,6 +29,10 @@ class Address < ApplicationRecord
 
   after_validation :geocode
 
+  def full_state
+    STATES[state]
+  end
+
   def to_s
     s = ''
     s += street.to_s

@@ -1,9 +1,22 @@
 Facility.destroy_all
 
-10.times do
-  f = Facility.create!(
-    name: Faker::Company.name
+50.times do |n|
+  f = Facility.new(
+    name: Faker::Company.name,
+    phone: Faker::PhoneNumber.phone_number
   )
+
+  a = Address.new(
+    street: Faker::Address.street_address,
+    city: Faker::Address.city,
+    state: Address::STATES.keys.sample,
+    zip: Faker::Address.zip,
+  )
+
+  f.address = a
+  f.save!
+
+  puts "Facility #{n} created!"
 end
 
 User.destroy_all

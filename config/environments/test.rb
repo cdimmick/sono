@@ -1,4 +1,7 @@
 Rails.application.configure do
+  # config.action_controller.asset_host = "file://#{::Rails.root}/public"
+  # config.assets.prefix = 'assets_test'
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # The test environment is used exclusively to run your application's
@@ -43,4 +46,5 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
 end

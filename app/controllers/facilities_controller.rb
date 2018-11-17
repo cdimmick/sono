@@ -1,5 +1,5 @@
 class FacilitiesController < ApplicationController
-  before_action :authenticate_super_admin!, only: [:new, :create, :edit, :update]
+  before_action :authenticate_super_admin!, only: [:index, :new, :create, :edit, :update]
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
 
   def index

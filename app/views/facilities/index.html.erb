@@ -1,36 +1,41 @@
 <div id="facilities">
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
-      <div class="col-xs-12">
-        <h1>Facilities</h1>
-        <%= link_to 'New', new_facility_path, class: 'btn btn-primary pull-right' %>
-
-        <table id="facilities_table" class="table table-striped">
-          <thead>
-            <tr>
-              <th>Name</th>
-            </tr>
-          </thead>
-
-          <tbody>
-
-          </tbody>
-        </table>
+      <div class="col-xs-12 w-100">
+        <%= link_to 'New', new_facility_path, class: 'btn btn-primary float-right' %>
+        <h1 class="w-100">Facilities</h1>
       </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <table id="facilities_table" class="table w-100 table-striped sortable_table">
+        <thead class="thead-dark">
+          <tr>
+            <th data-sorter="name"><span>Name</span></th>
+            <th data-sorter="phone"><span>Phone</span></th>
+            <th data-sorter="address.street"><span>Street</span></th>
+            <th data-sorter="address.street2"><span>Street2</span></th>
+            <th data-sorter="address.city"><span>City</span></th>
+            <th data-sorter="address.state"><span>State</span></th>
+            <th data-sorter="address.zip"><span>Zip</span>  </th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
 
 <script>
-  let facilities = [
-    <% @facilities.each do |facility| %>
-      {
-        name: "<%= j facility.name %>"
-      },
-    <% end %>
-  ];
+  $(document).on('turbolinks:load', function(){
+    let facilities = <%== render template: 'facilities/index.json',
+                          locals: {facilities: @facilities} %>;
 
-  $(document).ready(function(){
     Facilities.init(facilities);
   });
 </script>

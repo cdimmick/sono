@@ -12,9 +12,10 @@
 #     end
 #
 #     it 'should list facilities' do
-#       skip
 #       visit '/facilities'
-#       find_all('.facility_row').count.should == 10
+#       sleep 3
+#       save_and_open_page
+#       page.find_all('tr').count.should == 10
 #     end
 #   end
 # end

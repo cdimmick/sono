@@ -1,9 +1,12 @@
+# require 'capybara/rails'
 require 'capybara/rspec'
 require 'capybara/poltergeist'
 require 'factory_bot_rails'
 require 'vcr'
 require 'shoulda'
 require 'devise'
+
+Capybara.javascript_driver = :poltergeist
 
 VCR.configure do |config|
   config.cassette_library_dir = "spec/fixtures/vcr_cassettes"
@@ -15,6 +18,10 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = [:should, :expect]
   end
+
+  # config.before(:suite) do
+  #   %x[bundle exec rake assets:precompile]
+  # end
 
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest

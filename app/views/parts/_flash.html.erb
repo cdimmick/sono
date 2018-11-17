@@ -1,0 +1,23 @@
+<% if alert %>
+  <div class="flash alert">
+    <div class="container">
+      <%= alert %>
+    </div>
+  </div>
+<% end %>
+
+<% if notice %>
+  <div class="flash notice">
+    <div class="container">
+      <%= notice %>
+    </div>
+  </div>
+<% end %>
+
+<!-- <script>
+  $(document).ready(function(){
+    window.setTimeout(function(){
+      $('.flash').slideUp(200);
+    }, 5000);
+  });
+</script> -->

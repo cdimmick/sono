@@ -45,5 +45,12 @@ describe Address, type: :model do
 
       end
     end
+
+    describe '#full_state' do
+      it 'should return the full state name' do
+        @address.state = 'WA'
+        @address.full_state.should == 'Washington'
+      end
+    end
   end
 end

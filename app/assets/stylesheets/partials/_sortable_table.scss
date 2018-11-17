@@ -1,0 +1,11 @@
+.sortable_table{
+  th{
+    span{
+      cursor: pointer;
+    }
+  }
+
+  th:hover{
+    // background-color: $gray-600;
+  }
+}

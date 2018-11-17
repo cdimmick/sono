@@ -1,0 +1,26 @@
+//--- Main Nav ---
+  #main_nav{
+    margin-bottom: 20px;
+  }
+// end Main Nav
+
+//--- Flash ---
+.flash{
+  text-align: center;
+  background-color: white;
+  border-bottom: 1px solid $dark;
+  padding-bottom: 20px;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.flash.notice{
+  color: $dark;
+}
+
+.flash.alert{
+  color: $danger;
+}
+
+// end Flash ---
