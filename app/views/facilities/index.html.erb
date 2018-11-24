@@ -1,16 +1,16 @@
 <div id="facilities">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-xs-12 w-100">
+      <div class="col-sm-12">
         <%= link_to 'New', new_facility_path, class: 'btn btn-primary float-right' %>
-        <h1 class="w-100">Facilities</h1>
+        <h1>Facilities</h1>
       </div>
     </div>
   </div>
 
   <div class="container-fluid">
     <div class="row">
-      <table id="facilities_table" class="table w-100 table-striped sortable_table">
+      <table id="facilities_table" class="table table-striped sortable_table">
         <thead class="thead-dark">
           <tr>
             <th data-sorter="name"><span>Name</span></th>
@@ -22,9 +22,7 @@
             <th data-sorter="address.zip"><span>Zip</span>  </th>
           </tr>
         </thead>
-
         <tbody>
-
         </tbody>
       </table>
     </div>

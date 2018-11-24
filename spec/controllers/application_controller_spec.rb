@@ -1,10 +1,6 @@
 require 'rails_helper'
 
 describe ApplicationController, type: :controller do
-  before do
-    # @request.env["devise.mapping"] = Devise.mappings[:user]
-  end
-
   describe 'Methods' do
     describe '#user_signed_in?' do
       it 'should return false if user is not signed in' do

@@ -7,6 +7,7 @@ describe Facility, type: :model do
 
   describe 'Associations' do
     it{ should have_many(:admins).class_name('User') }
+
     it 'should destory admins on destroy' do
       @facility.save
       admin = create(:admin)
@@ -17,6 +18,7 @@ describe Facility, type: :model do
     end
 
     it{ should have_one :address }
+
     it 'should destory address on destroy' do
       @facility.save
       @facility.address = create(:address)
@@ -27,6 +29,7 @@ describe Facility, type: :model do
     end
 
     it{ should have_many :events }
+
     it 'should destroy events on destroy' do
       @facility.save
       event = create(:event)
@@ -35,6 +38,9 @@ describe Facility, type: :model do
             .to change{ event.persisted? }
             .from(true).to(false)
     end
+
+    it{ should have_many :patronages }
+    it{ should have_many(:users).through(:patronages) }
   end
 
   describe 'Validations' do
