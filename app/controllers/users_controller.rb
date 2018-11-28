@@ -1,20 +1,31 @@
 class UsersController < ApplicationController
   before_action :authenticate_admin!
-  before_action :authenticate_super_admin_has_acting_as_set!, only: [:new, :create, :update, :edit, :index]
+  before_action :authenticate_super_admin_has_acting_as_set!, except: [:destroy]
+  before_action :authenticate_super_admin!, only: [:destroy]
   before_action :set_facility
   before_action :set_users, except: [:edit, :new]
   before_action :set_admins, except: [:edit, :new]
   before_action :set_user, only: [:edit, :update, :destroy]
+  # before_action :authenticate_admin_can_modify_user!, only: [:edit, :update]
 
   def index
   end
 
   def edit
     #TODO who should edit?
+    #TODO spec
   end
 
   def update
+    #TODO spec
 
+    return unless user_can_set_role?
+
+    if @user.update(user_params)
+      redirect_to users_path, notice: "#{@user.name} has been created."
+    else
+      render :edit, alert: 'User could not be saved.'
+    end
   end
 
   def new
@@ -36,6 +47,16 @@ class UsersController < ApplicationController
       redirect_to users_path, notice: "#{@user.role.titlecase} has been created"
     else
       render :new, alert: 'User could not be saved.'
+    end
+  end
+
+  def destroy
+    #TODO spec
+    unless @user == current_user
+      @user.destroy
+      redirect_to users_path, notice: 'User has been destroyed.'
+    else
+      redirect_to users_path, notice: 'You cannot destroy yourself.'
     end
   end
 

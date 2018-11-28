@@ -52,6 +52,11 @@
       <div class="form-group">
         <%= f.submit class: 'btn btn-primary' %>
       </div>
+      <% if !user.new_record? && user_is?('super_admin') %>
+        <div class="form-group">
+          <%= link_to 'Destroy', user, method: :delete, class: 'btn btn-danger', data: {confirm: 'Are you sure? This is permanent!'} %>
+        </div>
+      <% end %>
     </div>
   </div>
 <% end %>
