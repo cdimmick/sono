@@ -29,5 +29,7 @@ module Sono
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    config.action_mailer.default_url_options = { :host => ENV.fetch('APP_HOST') }
   end
 end
