@@ -1,7 +1,14 @@
 class User < ApplicationRecord
   ROLES = %w|user admin super_admin|
 
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+
   validates :role, presence: true, inclusion: {in: ROLES}
+
+  validates :name, presence: true
 
   belongs_to :facility, optional: true, inverse_of: :admins
 
@@ -15,15 +22,27 @@ class User < ApplicationRecord
     #remember to call the super
     #then put our own check to determine "active" state using
     #our own "is_active" column
-    super and self.active?
+    super && self.active?
   end
 
   def can?(role)
     ROLES.index(self.role) >= ROLES.index(role)
   end
 
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+  def acting_as
+    facility
+  end
+
+  before_validation :admin_validations
+
+  scope :users, -> { where(role: 'user') }
+  scope :admins, -> { where(role: 'admin') }
+  scope :super_admins, -> { where(role: 'super_admin') }
+
+  private
+
+  def admin_validations
+    return unless role == 'admin'
+    errors.add('facility', 'cannot be blank') if facility.nil?
+  end
 end

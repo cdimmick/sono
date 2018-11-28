@@ -2,12 +2,11 @@ Rails.application.routes.draw do
   resources :facilities do
     member do
       resources :events
-      resources :users
-      # , except: [:show]
     end
   end
 
-  devise_for :users
+  devise_for :users, path: 'u'
+  resources :users, except: [:show]
 
   get 'home', to: 'pages#home', as: 'home'
 

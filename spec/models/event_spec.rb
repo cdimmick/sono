@@ -35,5 +35,5 @@ describe Event, type: :model do
         @event.facility.should == @event.admin.facility
       end
     end
-  end
+  end 
 end

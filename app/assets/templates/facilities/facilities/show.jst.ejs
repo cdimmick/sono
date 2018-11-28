@@ -5,3 +5,20 @@
 <td><%= address.city %></td>
 <td><%= address.state %></td>
 <td><%= address.zip %></td>
+<td>
+  <a href="/facilities/<%= id %>" class="btn btn-sm btn-primary">
+    Act As
+  </a>
+</td>
+<td>
+  <a href="/facilities/<%= id %>/edit" class="btn btn-sm btn-info">
+    Edit
+  </a>
+</td>
+<td>
+  <a href="/facilities/<%= id %>" class="btn btn-sm btn-danger"
+     data-confirm="Are you sure? This is permanent!"
+     data-method="delete" rel="nofollow">
+    Destroy
+  </a>
+</td>

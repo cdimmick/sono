@@ -2,9 +2,11 @@ FactoryBot.define do
   factory :user do
     sequence(:email){ |n| "test#{n}@test.com" }
     password { ENV.fetch('PW') }
+    name { Faker::Name.name }
 
     factory :admin do
       role { 'admin' }
+      facility
     end
 
     factory :super_admin do

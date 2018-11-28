@@ -24,6 +24,14 @@ describe User, type: :model do
 
     it{ should validate_presence_of :role }
     it{ should validate_inclusion_of(:role).in_array(User::ROLES) }
+
+    it{ should validate_presence_of :name }
+
+    specify 'Admin must have an associated Facility' do
+      @admin.update(facility_id: nil)
+      @admin.valid?.should == false
+      @admin.errors[:facility].include?('cannot be blank').should == true
+    end
   end
 
   describe 'Attributes' do
@@ -49,5 +57,36 @@ describe User, type: :model do
         @super_admin.can?('super_admin').should == true
       end
     end
+
+    describe '#acting_as' do
+      it 'should return the facility associated with the super_admin' do
+        facility = create(:facility)
+        @super_admin.facility = facility
+        @super_admin.acting_as.should == facility
+      end
+    end
   end
+
+  describe 'Scopes' do
+    before do
+      @user.save!
+      @admin.save!
+      @super_admin.save!
+    end
+    specify ':users should return regular users' do
+      User.users.should == [@user]
+    end
+
+    specify ':admins should return admins' do
+      User.admins.should == [@admin]
+    end
+
+    specify ':super_admins should return regular super_admins' do
+      User.super_admins.should == [@super_admin]
+    end
+  end
+
+  # describe 'Idioms' do
+  #
+  # end
 end

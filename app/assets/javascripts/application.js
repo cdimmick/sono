@@ -17,12 +17,19 @@
 //= require turbolinks
 //= require underscore
 //= require backbone
+//= require backbone_shared
+
 //= require facilities/facilities
 //= require_tree ../templates
 //= require_tree ./facilities/models
 //= require_tree ./facilities/collections
 //= require_tree ./facilities/views
 // require_tree ./facilities/routers
+
+//= require users/users
+//= require_tree ./users/models
+//= require_tree ./users/collections
+//= require_tree ./users/views
 //= require_tree .
 
 function c(val){

@@ -1,7 +1,7 @@
-Facilities.Views.Index = Backbone.View.extend({
-  el: '#facilities',
+Users.Views.Index = Backbone.View.extend({
+  el: '#users',
   initialize: function(){
-    this.list = this.$el.find('#facilities_table tbody');
+    this.list = this.$el.find('#users_table tbody');
     this.headers = this.$el.find('th');
     this.listenTo(this.collection, 'reset', this.renderList)
   },
@@ -17,6 +17,6 @@ Facilities.Views.Index = Backbone.View.extend({
     renderBackboneSorters(this);
   },
   renderList: function(){
-    renderBackboneList(this, Facilities.Views.Show);
+    renderBackboneList(this, Users.Views.Show);
   }
 });

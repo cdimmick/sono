@@ -10,11 +10,15 @@ describe Facility, type: :model do
 
     it 'should destory admins on destroy' do
       @facility.save
-      admin = create(:admin)
-      @facility.admins << admin
-      expect{ @facility.destroy }
-            .to change{ admin.persisted? }
+      admin = create(:admin, facility_id: @facility.id)
+      expect{ @facility.destroy }.to change{ User.exists?(admin.id) }
             .from(true).to(false)
+    end
+
+    it 'should NOT destroy Super Admins which have this facility set as #acting_as' do
+      @facility.save!
+      super_admin = create(:super_admin, facility_id: @facility.id)
+      expect{ @facility.destroy }.not_to change{ User.exists?(super_admin.id) }
     end
 
     it{ should have_one :address }

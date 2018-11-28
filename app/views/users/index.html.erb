@@ -1,0 +1,44 @@
+<div id="users">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12">
+        <%= link_to 'New', new_user_path, class: 'btn btn-primary float-right' %>
+        <h1>
+          Users
+          <small>for <%= @facility.name %></small>
+        </h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <table id="users_table" class="table table-striped sortable_table">
+        <thead class="thead-dark">
+          <tr>
+            <th data-sorter="name"><span>Name</span></th>
+            <th data-sorter="phone"><span>Phone</span></th>
+            <th data-sorter="email"><span>Email</span></th>
+            <th data-sorter="role"><span>Role</span></th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).on('turbolinks:load', function(){
+    let users = <%== render template: 'users/index.json',
+                            locals: {users: @users} %>;
+
+    let admins = <%== render template: 'users/index.json',
+                            locals: {users: @admins} %>;
+
+    Users.init(users.concat(admins));
+  });
+</script>

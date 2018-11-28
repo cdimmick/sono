@@ -1,6 +1,6 @@
 module FeaturesHelper
   def login(user = create(:user))
-    visit '/users/sign_in'
+    visit '/u/sign_in'
     fill_in 'Email', with: user.email
     fill_in 'Password', with: ENV.fetch('PW')
     click_button 'Sign in'
@@ -9,9 +9,14 @@ module FeaturesHelper
 
   def facility_min
     attrs = attributes_for(:facility)
-
     fill_in 'facility_name', with: attrs[:name]
+    attrs
+  end
 
+  def user_min
+    attrs = attributes_for(:user)
+    fill_in 'user_name', with: attrs[:name]
+    fill_in 'user_email', with: attrs[:email]
     attrs
   end
 end

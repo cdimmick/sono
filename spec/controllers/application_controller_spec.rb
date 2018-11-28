@@ -67,5 +67,19 @@ describe ApplicationController, type: :controller do
         controller.user_can?('super_admin').should == true
       end
     end
+
+    describe 'user_is?(role)' do
+      it 'should return true if user role matches role' do
+        sign_in create(:admin)
+        controller.user_is?('admin').should == true
+        controller.user_is?('guest').should == false
+        controller.user_is?('super_admin').should == false
+        controller.user_is?('user').should == false
+      end
+
+      it 'should work for unsigned in as guest' do
+        controller.user_is?('guest').should == true
+      end
+    end
   end
 end

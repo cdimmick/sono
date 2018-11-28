@@ -1,7 +1,7 @@
 <%= form_with(model: facility, local: true) do |form| %>
-  <div class="row">
-    <div class="col-sm-12">
-      <% if facility.errors.any? %>
+  <% if facility.errors.any? %>
+    <div class="row">
+      <div class="col-sm-12">
         <div id="error_explanation">
           <h2><%= pluralize(facility.errors.count, "error") %> prohibited this facility from being saved:</h2>
 
@@ -11,9 +11,9 @@
             <% end %>
           </ul>
         </div>
-      <% end %>
+      </div>
     </div>
-  </div>
+  <% end %>
 
   <div class="row">
     <div class="col-sm-8">

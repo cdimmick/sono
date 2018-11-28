@@ -1,12 +1,17 @@
 class FacilitiesController < ApplicationController
-  before_action :authenticate_super_admin!, only: [:index, :new, :create, :edit, :update]
+  before_action :authenticate_super_admin!, only: [:index, :new, :create, :destroy]
+  before_action :authenticate_admin!, only: [:show, :edit, :update]
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user_is_facility_admin!, only: [:show, :edit, :update]
 
   def index
     @facilities = Facility.all
   end
 
   def show
+    if user_is?('super_admin')
+      current_user.update(facility_id: @facility.id)
+    end
   end
 
   def new
@@ -47,7 +52,7 @@ class FacilitiesController < ApplicationController
     @facility.destroy
     respond_to do |format|
       format.html { redirect_to facilities_url, notice: 'Facility was successfully destroyed.' }
-      format.json { head :no_content }
+      # format.json { head :no_content }
     end
   end
 
@@ -64,5 +69,11 @@ class FacilitiesController < ApplicationController
         :street, :street2, :street3, :number, :city, :state, :zip
       ]
     )
+  end
+
+  def authenticate_user_is_facility_admin!
+    unless user_is?('super_admin') || (user_is?('admin') and current_user.facility == @facility)
+      redirect_to root_path, alert: 'You must be a Super Admin to view that resource.'
+    end
   end
 end

@@ -1,8 +1,6 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.5.1'
-
 gem 'rails', '~> 5.2.1'
 
 gem 'mysql2', '>= 0.4.4', '< 0.6.0'
@@ -56,7 +54,9 @@ end
 
 group :test do
   gem 'selenium-webdriver'
-  gem 'chromedriver-helper'
+  gem 'chromedriver-helper', '1.2.0'
+  gem 'autoprefixer-rails', '8.6.5'
+  # gem 'chromedriver-helper'
   gem 'capybara'
   gem 'factory_bot_rails'
   gem 'poltergeist'
@@ -70,6 +70,8 @@ group :test do
   gem 'rails-controller-testing'
 end
 
-# gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+gem 'wdm', '>= 0.1.0' if Gem.win_platform?
 
 ruby '2.5.3'
