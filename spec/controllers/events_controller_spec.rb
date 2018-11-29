@@ -243,9 +243,9 @@ describe EventsController, type: :controller do
       end
 
       it 'should send an email to user' do
-        allow(UserMailer).to receive(:new_event).and_call_original
+        allow(UsersMailer).to receive(:new_event).and_call_original
         post :create, params: {event: attributes_for(:event, user_id: @user.id)}
-        expect(UserMailer).to have_received(:new_event)
+        expect(UsersMailer).to have_received(:new_event)
       end
 
       it 'should not create a New Event if params are missing' do
@@ -288,6 +288,12 @@ describe EventsController, type: :controller do
           expect(post :create, params: {event: attributes_for(:event, user_id: @user.id)})
                .to redirect_to("/events/#{assigns(:event).id}")
           flash[:notice].should == 'Event was successfully created.'
+        end
+
+        it 'should send an email to user' do
+          allow(UsersMailer).to receive(:new_event).and_call_original
+          post :create, params: {event: attributes_for(:event, user_id: @user.id)}
+          expect(UsersMailer).to have_received(:new_event)
         end
       end
     end
