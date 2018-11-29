@@ -44,6 +44,14 @@ describe 'Admin Features', type: :feature do
       click_button 'Create User'
       page.current_path.should == '/users'
     end
+
+    it 'should deliver a new user email' do
+      allow(UsersMailer).to receive(:new_user).and_call_original
+      visit '/users/new'
+      user_min
+      click_button 'Create User'
+      expect(UsersMailer).to have_received(:new_user)
+    end
   end
 
   describe 'Creating an Admin' do

@@ -212,10 +212,6 @@ describe FacilitiesController, type: :controller do
   end # Edit
 
   describe 'Update' do
-    it '' do
-      pending 'Do Update'
-      1.should == 2
-    end
   end
 
   describe 'Destroy' do

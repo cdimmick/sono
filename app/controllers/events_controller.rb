@@ -1,34 +1,33 @@
 class EventsController < ApplicationController
-  before_action :set_event, only: [:show, :edit, :update, :destroy]
   before_action :authenticate_admin!, except: [:show]
+  before_action :authenticate_super_admin_has_acting_as_set!, except: [:show, :destroy]
+  before_action :set_event, only: [:show, :edit, :update, :destroy]
+  before_action :set_facility, except: [:show]
+  before_action :set_users, only: [:new]
 
-  # GET /events
-  # GET /events.json
   def index
-    @events = Event.all
+    @events = @facility.events
+                       .where('start_time >= ?', Time.now)
+                       .order(start_time: :asc)
   end
 
-  # GET /events/1
-  # GET /events/1.json
   def show
   end
 
-  # GET /events/new
   def new
-    @event = Event.new
+    @event = Event.new(user_id: params[:user_id])
   end
 
-  # GET /events/1/edit
-  def edit
-  end
+  # def edit
+  # end
 
-  # POST /events
-  # POST /events.json
   def create
     @event = Event.new(event_params)
+    @event.admin = current_user
 
     respond_to do |format|
       if @event.save
+        UsersMailer.new_event(@event.id)
         format.html { redirect_to @event, notice: 'Event was successfully created.' }
         format.json { render :show, status: :created, location: @event }
       else
@@ -38,38 +37,45 @@ class EventsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /events/1
-  # PATCH/PUT /events/1.json
-  def update
-    respond_to do |format|
-      if @event.update(event_params)
-        format.html { redirect_to @event, notice: 'Event was successfully updated.' }
-        format.json { render :show, status: :ok, location: @event }
-      else
-        format.html { render :edit }
-        format.json { render json: @event.errors, status: :unprocessable_entity }
-      end
-    end
-  end
+  # def update
+  #   respond_to do |format|
+  #     if @event.update(event_params)
+  #       format.html { redirect_to @event, notice: 'Event was successfully updated.' }
+  #       format.json { render :show, status: :ok, location: @event }
+  #     else
+  #       format.html { render :edit }
+  #       format.json { render json: @event.errors, status: :unprocessable_entity }
+  #     end
+  #   end
+  # end
 
-  # DELETE /events/1
-  # DELETE /events/1.json
   def destroy
+    if user_is?('admin') && @event.facility != current_user.facility
+      redirect_to root_path, alert: 'You must be a Super Admin to view that resource.'
+      return
+    end
+
     @event.destroy
     respond_to do |format|
       format.html { redirect_to events_url, notice: 'Event was successfully destroyed.' }
-      format.json { head :no_content }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_event
-      @event = Event.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def event_params
-      params.require(:event).permit(:user_id, :facility_id, :admin_id, :start_time)
-    end
+  def set_event
+    @event = Event.find(params[:id])
+  end
+
+  def event_params
+    params.require(:event).permit(:user_id, :facility_id, :admin_id, :start_time)
+  end
+
+  def set_facility
+    @facility = current_user.facility
+  end
+
+  def set_users
+    @users = @facility.users
+  end
 end

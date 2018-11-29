@@ -26,14 +26,23 @@ describe Event, type: :model do
         @event.update(start_time: Time.now - 1.second)
         @event.valid?.should == true
       end
+
+      # it 'cannot conflict with other start_times for the same Facility' do
+      #   facility = create(:facility)
+      #   start = Time.now + 1.day
+      #   existing_event = create(:event, start_time: time, facility_id: facility.id)
+      #   @event.start_time = time
+      #   @event.
+      # end
     end
   end
 
   describe 'Methods' do
     describe '#facility' do
-      it 'should return :admin facility' do
+      it 'should return :admin facility (after save)' do
+        @event.save!
         @event.facility.should == @event.admin.facility
       end
     end
-  end 
+  end
 end

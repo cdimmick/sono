@@ -47,6 +47,14 @@ describe 'Super Admin Features', type: :feature do
         user.role.should == 'user'
       end
 
+      it 'should deliver a new user email' do
+        allow(UsersMailer).to receive(:new_user).and_call_original
+        visit '/users/new'
+        user_min
+        click_button 'Create User'
+        expect(UsersMailer).to have_received(:new_user)
+      end
+
       describe 'Creating an Admin' do
         it "should assign new Admin to @admin's facility" do
           visit '/users/new'

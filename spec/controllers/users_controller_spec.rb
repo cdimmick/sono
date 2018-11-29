@@ -39,7 +39,7 @@ describe UsersController, type: :controller do
         expect(get :index).to render_template(:index)
       end
 
-      it 'should assign Users and Admins associted with this facility to @users' do
+      it 'should assign Users associted with this facility to @users' do
         user = create(:user)
         user.facilities << @admin.facility
 
@@ -47,6 +47,13 @@ describe UsersController, type: :controller do
 
         get :index
         assigns(:users).should == [user]
+      end
+
+      it 'should assign Admins associted with this facility to @admins' do
+        other_admin = create(:user)
+
+        get :index
+        assigns(:admins).should == [@admin]
       end
 
       it 'should assign admins associted with this facility to @admins' do

@@ -67,7 +67,7 @@ class UsersController < ApplicationController
   end
 
   def set_users
-    @users = @facility.users
+    @users = @facility.users.order(updated_at: :desc)
   end
 
   def set_admins
@@ -84,13 +84,13 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
   end
 
-  def authenticate_super_admin_has_acting_as_set!
-    return unless user_is?('super_admin')
-
-    if current_user.facility.nil?
-      redirect_to facilities_path, alert: 'Please select a Facility to act as.'
-    end
-  end
+  # def authenticate_super_admin_has_acting_as_set!
+  #   return unless user_is?('super_admin')
+  #
+  #   if current_user.facility.nil?
+  #     redirect_to facilities_path, alert: 'Please select a Facility to act as.'
+  #   end
+  # end
 
   def user_can_set_role?
     if User::ROLES.index(@user.role) > User::ROLES.index(current_user.role)

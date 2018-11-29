@@ -3,10 +3,6 @@ FactoryBot.define do
     admin
     user
 
-    start_time { Time.now + Random.rand(1..10000).minutes }
-
-    after(:build) do |event|
-      event.facility = event.admin.facility 
-    end
+    start_time { Time.now + 1.day }
   end
 end
