@@ -9,6 +9,7 @@ describe Event, type: :model do
     it{ should belong_to :user }
     it{ should belong_to(:admin).class_name('User') }
     it{ should belong_to :facility }
+    it{ should have_many :charges }
   end
 
   describe 'Validations' do

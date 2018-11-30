@@ -3,6 +3,7 @@ class Event < ApplicationRecord
   belongs_to :admin, class_name: 'User'
   belongs_to :facility, optional: true
 
+  has_many :charges 
 
   validates :start_time, presence: true
   validate :start_time, :starts_after_now, on: :create
