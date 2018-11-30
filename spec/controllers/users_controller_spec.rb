@@ -3,6 +3,10 @@ require 'rails_helper'
 describe UsersController, type: :controller do
   before do
     @admin = create(:admin)
+    @facility = @admin.facility
+    @user = create(:user)
+    @user.facilities << @facility
+    @super_admin = create(:super_admin)
     @user_params = {user: attributes_for(:user)}
     @invalid_user_params = {user: attributes_for(:user, name: '')}
   end
@@ -17,7 +21,7 @@ describe UsersController, type: :controller do
 
     context 'As User' do
       before do
-        sign_in create(:user)
+        sign_in @user
       end
 
       specify 'Lower Roles cannot' do
@@ -40,13 +44,10 @@ describe UsersController, type: :controller do
       end
 
       it 'should assign Users associted with this facility to @users' do
-        user = create(:user)
-        user.facilities << @admin.facility
-
-        other_user = create(:user)
+        other_user = create(:user) # To show that this is not included
 
         get :index
-        assigns(:users).should == [user]
+        assigns(:users).should == [@user]
       end
 
       it 'should assign Admins associted with this facility to @admins' do
@@ -69,21 +70,32 @@ describe UsersController, type: :controller do
        end
     end
 
-    context 'As Super User' do
+    context 'As Super Admin' do
       before do
-        @facility = create(:facility)
-        @super_admin = create(:super_admin, facility_id: @facility.id)
         sign_in @super_admin
       end
 
-      it 'should render index template if super_admin has been an acts_as' do
-        expect(get :index).to render_template(:index)
+      context 'Wihout acting_as set' do
+        it 'should redirect to facilities' do
+          expect(get :index).to redirect_to(facilities_path)
+          flash[:alert].should == 'Please select a Facility to act as.'
+        end
       end
 
-      it 'should redirect to facilties_path if no Facility is set as Super Admins acting_as' do
-        @super_admin.update(facility_id: nil)
-        expect(get :index).to redirect_to(facilities_path)
-        flash[:alert].should == 'Please select a Facility to act as.'
+      context 'With acting_as set' do
+        before do
+          @super_admin.acting_as = @facility
+        end
+
+        it 'should render index template if super_admin has been an acts_as' do
+          expect(get :index).to render_template(:index)
+        end
+
+        it 'should redirect to facilties_path if no Facility is set as Super Admins acting_as' do
+          @super_admin.update(facility_id: nil)
+          expect(get :index).to redirect_to(facilities_path)
+          flash[:alert].should == 'Please select a Facility to act as.'
+        end
       end
     end
   end # Index
@@ -162,4 +174,86 @@ describe UsersController, type: :controller do
       end
     end
   end # Create
+
+  describe 'DELETE /users/:id' do
+    specify 'Guests cannot delete' do
+      expect(delete :destroy, params: {id: @user.id}).to redirect_to(root_path)
+      flash[:alert].should == "You must be an Admin to view that resource."
+    end
+
+    specify 'Users cannot delete' do
+      sign_in @user
+      expect(delete :destroy, params: {id: @user.id}).to redirect_to(root_path)
+      flash[:alert].should == "You must be an Admin to view that resource."
+    end
+
+    context 'As Admin' do
+      before do
+        sign_in @admin
+      end
+
+      it 'should remove the user from the facility' do
+        expect{ delete :destroy, params: {id: @user.id} }
+              .to change{ @user.reload.facilities.count }.by(-1)
+      end
+
+      it 'should not delete the User' do
+        expect{ delete :destroy, params: {id: @user.id} }
+              .not_to change{ User.exists?(@user.id) }
+      end
+
+      it 'should redirect_to users_path' do
+        expect(delete :destroy, params: {id: @user.id}).to redirect_to(users_path)
+        flash[:notice].should == 'User has been destroyed.'
+      end
+
+      it 'should not allow the Admin to remove a User
+          that is not associated with their Facility' do
+        new_user = create(:user)
+        expect(delete :destroy, params: {id: new_user.id}).to redirect_to(root_path)
+        flash[:alert].should == 'You must be acting as that Facility to destory that resource.'
+      end
+    end
+
+    context 'As Super Admin' do
+      before do
+        sign_in @super_admin
+      end
+
+      context 'Without acting_as set' do
+        it 'should redirect to facilities' do
+          expect(delete :destroy, params: {id: @user.id}).to redirect_to(facilities_path)
+          flash[:alert].should == 'Please select a Facility to act as.'
+        end
+      end
+
+      context 'With acting_as set' do
+        before do
+          @super_admin.acting_as = @facility
+        end
+
+        it 'should remove the user from the facility' do
+          expect{ delete :destroy, params: {id: @user.id} }
+                .to change{ @user.reload.facilities.count }.by(-1)
+        end
+
+        it 'should not delete the User' do
+          expect{ delete :destroy, params: {id: @user.id} }
+                .not_to change{ User.exists?(@user.id) }
+        end
+
+        it 'should redirect_to users_path' do
+          expect(delete :destroy, params: {id: @user.id}).to redirect_to(users_path)
+          flash[:notice].should == 'User has been destroyed.'
+        end
+
+        it 'should not allow the Admin to remove a User
+            that is not associated with their Facility' do
+          new_user = create(:user)
+          expect(delete :destroy, params: {id: new_user.id}).to redirect_to(root_path)
+          flash[:alert].should == 'You must be acting as that Facility to destory that resource.'
+        end
+      end
+    end
+  end
 end

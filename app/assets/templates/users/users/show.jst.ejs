@@ -4,3 +4,9 @@
 <td><%= role %></td>
 <td><a href="/events/new?user_id=<%= id %>" class="btn btn-sm btn-primary">New Appointment</a></td>
 <td><a href="/users/<%= id %>/edit" class="btn btn-sm btn-info">Edit</a></td>
+<td>
+  <a href="/users/<%= id %>" rel="nofollow" data-method="delete"
+          data-confirm="Are you sure?" class="btn btn-sm btn-danger">
+    Delete
+  </a>
+</td>  

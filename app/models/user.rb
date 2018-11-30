@@ -33,6 +33,11 @@ class User < ApplicationRecord
     facility
   end
 
+  def acting_as=(facility)
+    raise ArgumentError, "Only Super Admins should use this method" unless role == 'super_admin'
+    update(facility_id: facility.id)
+  end
+
   before_validation :admin_validations
 
   scope :users, -> { where(role: 'user') }

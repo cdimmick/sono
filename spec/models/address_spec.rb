@@ -20,7 +20,7 @@ describe Address, type: :model do
   describe 'Idioms' do
     describe 'Geocoding' do
       it 'should geocode when saved' do
-        VCR.use_cassette('model/address/geocodeing') do
+        VCR.use_cassette('models/address/geocodeing') do
           expect{ @address.save! }
                 .to change{ [@address.latitude, @address.longitude] }
                 .from([nil, nil])

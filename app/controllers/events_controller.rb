@@ -12,6 +12,7 @@ class EventsController < ApplicationController
   end
 
   def show
+    @paid = true if params[:paid] == 'true'
   end
 
   def new

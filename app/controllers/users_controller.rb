@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   before_action :authenticate_admin!
-  before_action :authenticate_super_admin_has_acting_as_set!, except: [:destroy]
-  before_action :authenticate_super_admin!, only: [:destroy]
+  before_action :authenticate_super_admin_has_acting_as_set!
+  # before_action :authenticate_super_admin!, only: [:destroy]
   before_action :set_facility
   before_action :set_users, except: [:edit, :new]
   before_action :set_admins, except: [:edit, :new]
@@ -51,12 +51,11 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    #TODO spec
-    unless @user == current_user
-      @user.destroy
+    if @user.facilities.include?(@facility)
+      @facility.users.delete(@user)
       redirect_to users_path, notice: 'User has been destroyed.'
     else
-      redirect_to users_path, notice: 'You cannot destroy yourself.'
+      redirect_to root_path, alert: 'You must be acting as that Facility to destory that resource.'
     end
   end
 
@@ -83,14 +82,6 @@ class UsersController < ApplicationController
   def set_user
     @user = User.find(params[:id])
   end
-
-  # def authenticate_super_admin_has_acting_as_set!
-  #   return unless user_is?('super_admin')
-  #
-  #   if current_user.facility.nil?
-  #     redirect_to facilities_path, alert: 'Please select a Facility to act as.'
-  #   end
-  # end
 
   def user_can_set_role?
     if User::ROLES.index(@user.role) > User::ROLES.index(current_user.role)

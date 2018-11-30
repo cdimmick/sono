@@ -10,4 +10,6 @@ Rails.application.routes.draw do
   devise_for :users, path: 'u'
 
   resources :users, except: [:show]
+
+  resources :charges, only: [:create]
 end

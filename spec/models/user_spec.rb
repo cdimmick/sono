@@ -65,6 +65,25 @@ describe User, type: :model do
         @super_admin.acting_as.should == facility
       end
     end
+
+    describe '#acting_as=(facility)' do
+      before do
+        @facility = create(:facility)
+      end
+
+      it 'should set facility' do
+        expect{ @super_admin.acting_as = @facility }
+              .to change{ @super_admin.acting_as }.from(nil).to(@facility)
+      end
+
+      it 'should raise an error if User is not a Super Admin' do
+        expect{ @admin.acting_as = @facility }
+              .to raise_error(ArgumentError, 'Only Super Admins should use this method')
+
+        expect{ @user.acting_as = @facility }
+              .to raise_error(ArgumentError, 'Only Super Admins should use this method')
+      end
+    end
   end
 
   describe 'Scopes' do
