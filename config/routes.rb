@@ -9,7 +9,11 @@ Rails.application.routes.draw do
 
   devise_for :users, path: 'u'
 
-  resources :users, except: [:show]
+  resources :users, except: [:show] do
+    member do
+      delete 'deactivate'
+    end
+  end
 
   resources :charges, only: [:create]
 end

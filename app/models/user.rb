@@ -44,6 +44,9 @@ class User < ApplicationRecord
   scope :admins, -> { where(role: 'admin') }
   scope :super_admins, -> { where(role: 'super_admin') }
 
+  scope :active, -> { where(active: true) }
+  scope :inactive, -> { where(active: false) }
+
   private
 
   def admin_validations

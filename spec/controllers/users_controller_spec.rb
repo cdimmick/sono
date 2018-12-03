@@ -61,13 +61,20 @@ describe UsersController, type: :controller do
         other_admin = create(:admin)
         get :index
         assigns(:admins).should == [@admin]
-       end
+      end
 
-       it 'should NOT assign associates super_admins to @admin' do
-         super_admin = create(:super_admin, facility_id: @admin.facility.id)
-         get :index
-         assigns(:admins).include?(super_admin).should == false
-       end
+      it 'should NOT assign associates super_admins to @admin' do
+        super_admin = create(:super_admin, facility_id: @admin.facility.id)
+        get :index
+        assigns(:admins).include?(super_admin).should == false
+      end
+
+      it 'should not include not active Admins' do
+        inactive_admin = create(:admin, facility_id: @admin.facility.id, active: false)
+        get :index
+        assigns(:admins).include?(inactive_admin).should == false
+
+      end
     end
 
     context 'As Super Admin' do
@@ -192,6 +199,20 @@ describe UsersController, type: :controller do
         sign_in @admin
       end
 
+      specify 'Admins cannot be destroyed' do
+        other_admin = create(:admin, facility_id: @admin.facility.id)
+        expect(delete :destroy, params: {id: other_admin.id})
+              .to redirect_to(root_path)
+        flash[:alert].should == 'You cannot destroy Admins.'
+      end
+
+      specify 'Super Admins cannot be destroyed' do
+        other_admin = create(:super_admin, facility_id: @admin.facility.id)
+        expect(delete :destroy, params: {id: other_admin.id})
+              .to redirect_to(root_path)
+        flash[:alert].should == 'You cannot destroy Super Admins.'
+      end
+
       it 'should remove the user from the facility' do
         expect{ delete :destroy, params: {id: @user.id} }
               .to change{ @user.reload.facilities.count }.by(-1)
@@ -211,7 +232,7 @@ describe UsersController, type: :controller do
           that is not associated with their Facility' do
         new_user = create(:user)
         expect(delete :destroy, params: {id: new_user.id}).to redirect_to(root_path)
-        flash[:alert].should == 'You must be acting as that Facility to destory that resource.'
+        flash[:alert].should == 'You must be a Super Admin to view that resource.'
       end
     end
 
@@ -247,13 +268,117 @@ describe UsersController, type: :controller do
           flash[:notice].should == 'User has been destroyed.'
         end
 
-        it 'should not allow the Admin to remove a User
-            that is not associated with their Facility' do
+        it 'should not allow the Super Admin to remove a User
+            that is not associated with their acting_as Facility' do
           new_user = create(:user)
-          expect(delete :destroy, params: {id: new_user.id}).to redirect_to(root_path)
-          flash[:alert].should == 'You must be acting as that Facility to destory that resource.'
+          expect(delete :destroy, params: {id: new_user.id})
+                .to redirect_to(facilities_path)
+          flash[:alert].should == 'You must selet a Facility to act as.'
+        end
+
+        specify 'Admins cannot be destroyed' do
+          other_admin = create(:admin, facility_id: @admin.facility.id)
+          expect(delete :destroy, params: {id: other_admin.id})
+                .to redirect_to(root_path)
+          flash[:alert].should == 'You cannot destroy Admins.'
+        end
+
+        specify 'Super Admins cannot be destroyed' do
+          other_admin = create(:super_admin, facility_id: @admin.facility.id)
+          expect(delete :destroy, params: {id: other_admin.id})
+                .to redirect_to(root_path)
+          flash[:alert].should == 'You cannot destroy Super Admins.'
         end
       end
     end
-  end
+  end # Destroy
+
+  describe 'DELETE /users/:id/deactivate' do
+    describe 'As Admin' do
+      before do
+        sign_in @admin
+      end
+
+      describe 'Admins' do
+        before do
+          @other_admin = create(:admin, facility_id: @admin.facility.id)
+        end
+
+        specify 'Admins should not be destroyed' do
+          expect{ delete :deactivate, params: {id: @other_admin.id} }
+                .not_to change{ User.exists?(@other_admin.id) }
+        end
+
+        specify 'Admins should NOT be removed from facility' do
+          expect{ delete :deactivate, params: {id: @other_admin.id} }
+                .not_to change{ @other_admin.facility_id }
+        end
+
+        specify 'Admins should be set to inactive' do
+          expect{ delete :deactivate, params: {id: @other_admin.id} }
+                .to change{ @other_admin.reload.active }.from(true).to(false)
+        end
+
+        it 'should redirect to users_path' do
+          expect(delete :deactivate, params: {id: @other_admin.id} )
+                .to redirect_to(users_path)
+          flash[:notice].should == "Admin has been deactivated."
+        end
+
+        specify 'Admins should NOT be able to Deactivate admins from other Facilities' do
+          other_facility_admin = create(:admin)
+          expect(delete :deactivate, params: {id: other_facility_admin.id})
+                .to redirect_to(root_path)
+          flash[:alert].should == 'You must be a Super Admin to view that resource.'
+        end
+      end
+
+      describe 'Super Admins' do
+        it '' do
+          pending
+        end
+      end
+    end
+
+    describe 'As Super Admin' do
+      before do
+        sign_in @super_admin
+      end
+
+      describe 'Admins' do
+        specify 'Admins should not be destroyed' do
+          expect{ delete :deactivate, params: {id: @admin.id} }
+                .not_to change{ User.exists?(@admin.id) }
+        end
+
+        specify 'Admins should NOT be removed from facility' do
+          expect{ delete :deactivate, params: {id: @admin.id} }
+                .not_to change{ @admin.facility_id }
+        end
+
+        specify 'Admins should be set to inactive' do
+          expect{ delete :deactivate, params: {id: @admin.id} }
+                .to change{ @admin.reload.active }.from(true).to(false)
+        end
+
+        specify 'Super Admins should be able to Deactivate Admins from any Facility' do
+          other_facility_admin = create(:admin)
+          expect{ delete :deactivate, params: {id: other_facility_admin.id} }
+                .to change{ other_facility_admin.reload.active }.from(true).to(false)
+        end
+
+        it 'should redirect to users_path' do
+          delete :deactivate, params: {id: @admin.id}
+          response.should redirect_to(users_path)
+          flash[:notice].should == "Admin has been deactivated."
+        end
+      end
+
+      describe 'Super Admins' do
+        it '' do
+          pending
+        end
+      end
+    end
+  end # Deactivate
 end

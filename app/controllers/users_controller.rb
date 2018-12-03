@@ -1,24 +1,18 @@
 class UsersController < ApplicationController
   before_action :authenticate_admin!
-  before_action :authenticate_super_admin_has_acting_as_set!
-  # before_action :authenticate_super_admin!, only: [:destroy]
-  before_action :set_facility
-  before_action :set_users, except: [:edit, :new]
-  before_action :set_admins, except: [:edit, :new]
-  before_action :set_user, only: [:edit, :update, :destroy]
-  # before_action :authenticate_admin_can_modify_user!, only: [:edit, :update]
+  before_action :authenticate_super_admin_has_acting_as_set!, except: [:deactivate]
+  before_action :set_facility, except: [:deactivate]
+  before_action :set_users, except: [:edit, :new, :destroy, :deactivate]
+  before_action :set_admins, except: [:edit, :new, :destroy, :deactivate]
+  before_action :set_user, only: [:edit, :update, :destroy, :deactivate]
 
   def index
   end
 
   def edit
-    #TODO who should edit?
-    #TODO spec
   end
 
   def update
-    #TODO spec
-
     return unless user_can_set_role?
 
     if @user.update(user_params)
@@ -51,11 +45,28 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    if @user.facilities.include?(@facility)
-      @facility.users.delete(@user)
-      redirect_to users_path, notice: 'User has been destroyed.'
+    if @user.role == 'user'
+      if @user.facilities.include?(@facility)
+        @facility.users.delete(@user)
+        redirect_to users_path, notice: 'User has been destroyed.'
+      else
+        if user_is?('super_admin')
+          redirect_to facilities_path, alert: 'You must selet a Facility to act as.'
+        else
+          redirect_to root_path, alert: 'You must be a Super Admin to view that resource.'
+        end
+      end
     else
-      redirect_to root_path, alert: 'You must be acting as that Facility to destory that resource.'
+      redirect_to root_path, alert: "You cannot destroy #{@user.role.titlecase}s."
+    end
+  end
+
+  def deactivate
+    if @user.facility == current_user.facility || user_is?('super_admin')
+      @user.update(active: false)
+      redirect_to users_path, notice: "#{@user.role.titlecase} has been deactivated."
+    else
+      redirect_to root_path, alert: 'You must be a Super Admin to view that resource.'
     end
   end
 
@@ -70,7 +81,7 @@ class UsersController < ApplicationController
   end
 
   def set_admins
-    @admins = @facility.admins.admins # 2nd .admins is scope on User
+    @admins = @facility.admins.admins.active # 2nd .admins is scope on User
   end
 
   def user_params

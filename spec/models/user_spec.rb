@@ -103,6 +103,18 @@ describe User, type: :model do
     specify ':super_admins should return regular super_admins' do
       User.super_admins.should == [@super_admin]
     end
+
+    specify ':active should return for which active is true' do
+      inactive = create(:user, active: false)
+      User.active.count.should == 3
+      User.active.include?(inactive).should == false
+    end
+
+    specify ':inactive should return for which active is false' do
+      inactive = create(:user, active: false)
+      User.inactive.count.should == 1
+      User.inactive.include?(inactive).should == true
+    end
   end
 
   # describe 'Idioms' do

@@ -5,8 +5,15 @@
 <td><a href="/events/new?user_id=<%= id %>" class="btn btn-sm btn-primary">New Appointment</a></td>
 <td><a href="/users/<%= id %>/edit" class="btn btn-sm btn-info">Edit</a></td>
 <td>
-  <a href="/users/<%= id %>" rel="nofollow" data-method="delete"
-          data-confirm="Are you sure?" class="btn btn-sm btn-danger">
-    Delete
-  </a>
-</td>  
+  <% if(role === 'user'){ %>
+    <a href="/users/<%= id %>" rel="nofollow" data-method="delete"
+            data-confirm="Are you sure?" class="btn btn-sm btn-danger">
+      Delete
+    </a>
+  <% } else { %>
+    <a href="/users/<%= id %>/deactivate" rel="nofollow" data-method="delete"
+            data-confirm="Are you sure?" class="btn btn-sm btn-danger">
+      Deactivate
+    </a>
+  <% } %>
+</td>

@@ -15,8 +15,6 @@ class ApplicationController < ActionController::Base
 
 
   def authenticate_super_admin_has_acting_as_set!
-    return unless user_is?('super_admin')
-
     if current_user.facility.nil?
       redirect_to facilities_path, alert: 'Please select a Facility to act as.'
     end
