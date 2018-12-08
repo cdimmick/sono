@@ -1,9 +1,33 @@
-<p id="notice"><%= notice %></p>
+<div id="facility">
+  <div class="container">
+    <h1><%= @facility.name %></h1>
 
-<p>
-  <strong>Name:</strong>
-  <%= @facility.name %>
-</p>
+    <div class="row">
+      <div class="col-4">
+        <h6>Your Sign Up URL:</h6>
+      </div>
+      <div class="col-8">
+        <input type="text" value="<%= sign_ups_new_user_url(current_user) %>"
+               class="sign_up_url click_to_copy"
+               style="width:100%;text-align:left" />
+      </div>
+    </div>
 
-<%= link_to 'Edit', edit_facility_path(@facility) %> |
-<%= link_to 'Back', facilities_path %>
+    <div class="row" style="margin-top:40px;">
+      <div class="col-sm-12">
+        <h2>Today's Appointments</h2>
+        <% now = Time.now %>
+        <% events = @facility.events
+                             .where('start_time <= ?', now.end_of_day)
+                             .where('start_time >= ?', now.beginning_of_day) %>
+        <%= render partial: 'events/list', locals: {events: events} %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).on('turbolinks:load', function(){
+    clickCopy('.sign_up_url');
+  });
+</script>

@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   get 'home', to: 'pages#home', as: 'home'
+  get 'router', to: 'pages#router', as: 'router'
 
-  root to: 'pages#home'
+  # root to: 'pages#home'
+  root to: 'pages#router'
 
   resources :facilities
 
@@ -9,7 +11,7 @@ Rails.application.routes.draw do
 
   devise_for :users, path: 'u'
 
-  resources :users, except: [:show] do
+  resources :users do
     member do
       delete 'deactivate'
       get 'sign_ups/new', to: 'sign_ups#new'

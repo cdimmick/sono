@@ -12,42 +12,8 @@
 
     <div class="row">
       <div class="col-sm-12">
-        <% @events.group_by{ |e| e.start_time.strftime('%B') }.each do |month, month_group| %>
-          <div class="month">
-            <% month_group.group_by{ |e| e.start_time.strftime('%e') }.each do |day, day_group| %>
-              <div class="day">
-                <h3>
-                  <%= month %>
-                  <small><%= day %></small>
-                </h3>
-
-                <ul class="appointments">
-                  <% day_group.each do |event| %>
-                    <% user = event.user %>
-                    <li>
-                      <span class="start_time">
-                        <%= event.start_time.strftime('%l:%M %p') %>
-                      </span>
-                      <span class="name"><%= user.name %></span>
-                      <span class="controls">
-                        <input type="text" value="<%= event.stream_token %>" class="stream_token" />
-                        <span><%= link_to 'Edit', edit_event_path(event) %></span>
-                        <span><%= link_to 'View', event %></span>
-                      </span>
-                    </li>
-                  <% end %>
-                </ul>
-              </div>
-            <% end %>
-          </div>
-        <% end %>
+        <%= render partial: 'list', locals: {events: @events} %>
       </div>
     </div>
   </div>
 </div>
-
-<script>
-  $(document).on('turbolinks:load', function(){
-    clickCopy('.stream_token');
-  });
-</script>

@@ -3,13 +3,14 @@ require 'rails_helper'
 describe 'Facility Features', type: :feature do
   before do
     @super_admin = create(:super_admin)
+    @admin = create(:admin)
   end
 
   describe 'Creating a Facility' do
     specify 'Admins or lower cannot Create a Facility' do
-      login create(:admin)
+      login @admin
       visit '/facilities/new'
-      page.current_path.should == '/'
+      page.current_path.should == "/facilities/#{@admin.facility.id}"
     end
 
     context 'As Super Admin' do
@@ -63,9 +64,9 @@ describe 'Facility Features', type: :feature do
     end
 
     specify 'Admins or lower cannot Create a Facility' do
-      login create(:admin)
+      login @admin
       visit "/facilities/#{@facility.to_param}/edit"
-      page.current_path.should == '/'
+      page.current_path.should == "/facilities/#{@admin.facility.id}"
     end
 
     context 'As Super Admin' do
