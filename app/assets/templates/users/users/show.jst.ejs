@@ -1,8 +1,21 @@
 <td><%= name %></td>
+<% if(Users.show_admins){ %>
+  <td>
+    <% if(typeof(facility) != 'undefined'){ %>
+      <a href="/facilities/<%= facility.id %>"><%= facility.name %></a>
+    <% } %>
+  </td>
+<% } %>
 <td><a href="tel:<%= phone %>"><%= phone %></a></td>
 <td><a href="mailto:<%= email %>"><%= email %></a></td>
-<td><%= role %></td>
-<td><a href="/events/new?user_id=<%= id %>" class="btn btn-sm btn-primary">New Appointment</a></td>
+<td><%= titleCase(role.replace('_', ' ')) %></td>
+<td>
+  <% if(role === 'user'){ %>
+    <a href="/events/new?user_id=<%= id %>" class="btn btn-sm btn-primary">
+      Appointment
+    </a>
+  <% } %>
+</td>
 <td><a href="/users/<%= id %>/edit" class="btn btn-sm btn-info">Edit</a></td>
 <td>
   <% if(role === 'user'){ %>

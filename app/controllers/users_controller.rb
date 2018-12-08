@@ -1,10 +1,15 @@
 class UsersController < ApplicationController
+  before_action :authenticate_super_admin!, only: [:admins]
   before_action :authenticate_admin!
-  before_action :authenticate_super_admin_has_acting_as_set!, except: [:deactivate]
-  before_action :set_facility, except: [:deactivate]
-  before_action :set_users, except: [:edit, :new, :destroy, :deactivate]
-  before_action :set_admins, except: [:edit, :new, :destroy, :deactivate]
+  before_action :authenticate_super_admin_has_acting_as_set!, except: [:deactivate, :admins]
+  before_action :set_facility, except: [:deactivate, :admins]
+  before_action :set_users, except: [:edit, :new, :destroy, :deactivate, :admins]
+  before_action :set_admins, except: [:edit, :new, :destroy, :deactivate, :admins]
   before_action :set_user, only: [:edit, :update, :destroy, :deactivate]
+
+  def admins
+    @users = User.admins + User.super_admins
+  end
 
   def index
   end
@@ -16,7 +21,7 @@ class UsersController < ApplicationController
     return unless user_can_set_role?
 
     if @user.update(user_params)
-      redirect_to users_path, notice: "#{@user.name} has been created."
+      redirect_to users_path, notice: "#{@user.name} has been updated."
     else
       render :edit, alert: 'User could not be saved.'
     end
@@ -27,20 +32,35 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(user_params)
+    new_user = true
+
+    if user_params[:role] == 'user'
+      @user = User.find_or_create_by(email: user_params[:email])
+      new_user = @user.new_record?
+      user_params.each{ |k, v| @user.send("#{k}=", v) }
+    else
+      @user = User.new(user_params)
+    end
 
     return unless user_can_set_role?
 
     password = random_password
-    @user.password = password
+    @user.password = password if new_user
+
     @user.facilities << @facility if @user.role == 'user'
     @user.facility = @facility if @user.role == 'admin'
 
     if @user.save
-      UsersMailer.new_user(@user.id, password).deliver_now
-      redirect_to users_path, notice: "#{@user.role.titlecase} has been created"
+      UsersMailer.new_user(@user.id, password).deliver_now if new_user
+
+      notice = "#{@user.role.titlecase} has been created"
+      if @user.role == 'user'
+        redirect_to "#{new_event_path}?user_id=#{@user.id}", notice: notice
+      else
+        redirect_to users_path, notice: notice
+      end
     else
-      render :new, alert: 'User could not be saved.'
+      render :new
     end
   end
 

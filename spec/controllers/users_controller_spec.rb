@@ -9,6 +9,7 @@ describe UsersController, type: :controller do
     @super_admin = create(:super_admin)
     @user_params = {user: attributes_for(:user)}
     @invalid_user_params = {user: attributes_for(:user, name: '')}
+    allow(UsersMailer).to receive(:new_user).and_call_original
   end
 
   describe 'GET /users' do
@@ -138,18 +139,92 @@ describe UsersController, type: :controller do
         flash[:alert].should == 'You cannot create that Role.'
       end
 
-      it 'should redirect to /users if user is saved' do
-        expect(post :create, params: @user_params).to redirect_to(users_url)
+      it 'should redirect to /events/new if user is saved' do
+        post :create, params: @user_params
+        user = assigns[:user]
+        expect(response).to redirect_to("#{new_event_path}?user_id=#{user.id}")
+      end
+
+      it 'should redirect to /users if Admin is saved' do
+        expect(post :create, params: {user: attributes_for(:admin)})
+              .to redirect_to(users_path)
       end
 
       it 'should render new if params are not complete' do
-        expect(post :create, params: @invalid_user_params).to render_template(:new)
+        expect(post :create, params: @invalid_user_params)
+              .to render_template(:new)
       end
 
       it 'should send a welcome email' do
-        allow(UsersMailer).to receive(:new_user).and_call_original
         post :create, params: @user_params
         expect(UsersMailer).to have_received(:new_user)
+      end
+
+      context 'User already exists' do
+        before do
+          @new_user_attributes = attributes_for(:user, email: @user.email)
+        end
+
+        specify 'if User already exist, DO NOT create a new user.' do
+          expect{ post :create, params: {user: @new_user_attributes} }
+                .not_to change{ User.users.count }
+        end
+
+        it 'should update existing user' do
+          expect{ post :create, params: {user: @new_user_attributes} }
+                .to change{ @user.reload.name }.to(@new_user_attributes[:name])
+        end
+
+        it 'should not change existing password' do
+          expect{ post :create, params: {user: @new_user_attributes} }
+                .not_to change{ @user.reload.password }
+        end
+
+        it 'should not send a new_user email' do
+          post :create, params: {user: @new_user_attributes}
+          expect(UsersMailer).to_not have_received(:new_user)
+        end
+
+        it "should associate user with @admin's facility" do
+          @user.facilities.delete_all
+          expect{ post :create, params: {user: @new_user_attributes} }
+                .to change{ @user.reload.facilities.include?(@admin.facility) }
+                .from(false).to(true)
+        end
+      end # User exists
+
+      context 'Admin already exists' do
+        before do
+          @new_admin_attributes = attributes_for(:admin, email: @admin.email)
+        end
+
+        specify 'if User has the same email as admin, return uniqueness error' do
+          post :create, params: {user: @new_admin_attributes}
+          assigns[:user].errors[:email]
+                 .include?('has already been taken').should == true
+        end
+
+        specify 'if User has the same email as admin, render :new' do
+          post :create, params: {user: @new_admin_attributes}
+          expect(response).to render_template(:new)
+        end
+      end
+
+      context 'Super Admin already exists' do
+        before do
+          @new_super_admin_attributes = attributes_for(:super_admin, email: @super_admin.email)
+        end
+
+        specify 'if User has the same email as Super Admin, change nothing' do
+          expect{ post :create, params: {user: @new_super_admin_attributes} }
+                .not_to change{ @super_admin.reload.name }
+        end
+
+        specify 'if User has the same email as Super Admin, render :new' do
+          post :create, params: {user: @new_super_admin_attributes}
+          expect(response).to redirect_to(users_path)
+          flash[:alert].should == 'You cannot create that Role.'
+        end
       end
     end
 
@@ -334,8 +409,10 @@ describe UsersController, type: :controller do
       end
 
       describe 'Super Admins' do
-        it '' do
-          pending
+        specify 'Admins cannot deactivate Super Admins' do
+          delete :deactivate, params: {id: @super_admin.id}
+          expect(response).to redirect_to(root_path)
+          flash[:alert].should == 'You must be a Super Admin to view that resource.'
         end
       end
     end
@@ -343,6 +420,7 @@ describe UsersController, type: :controller do
     describe 'As Super Admin' do
       before do
         sign_in @super_admin
+        @new_super_admin = create(:super_admin)
       end
 
       describe 'Admins' do
@@ -375,10 +453,50 @@ describe UsersController, type: :controller do
       end
 
       describe 'Super Admins' do
-        it '' do
-          pending
+        specify 'Super Admins should not be destroyed' do
+          expect{ delete :deactivate, params: {id: @new_super_admin.id} }
+                .not_to change{ User.exists?(@new_super_admin.id) }
+        end
+
+        it 'Should set Super Admin to inactive' do
+          expect{ delete :deactivate, params: {id: @new_super_admin.id} }
+                .to change{ @new_super_admin.reload.active }.from(true).to(false)
         end
       end
     end
   end # Deactivate
+
+  describe 'GET /users/admins' do
+    specify 'Guests cannot access' do
+      expect(get :admins).to redirect_to(root_path)
+      flash[:alert].should == 'You must be a Super Admin to view that resource.'
+    end
+
+    specify 'User cannot access' do
+      sign_in @user
+      expect(get :admins).to redirect_to(root_path)
+      flash[:alert].should == 'You must be a Super Admin to view that resource.'
+    end
+
+    specify 'Admin cannot access' do
+      sign_in @admin
+      expect(get :admins).to redirect_to(root_path)
+      flash[:alert].should == 'You must be a Super Admin to view that resource.'
+    end
+
+    context 'As Super Admin' do
+      before do
+        sign_in @super_admin
+      end
+
+      it 'should render :admin' do
+        expect(get :admins).to render_template(:admins)
+      end
+
+      it 'should assign all admins and super admins to @users' do
+        get :admins
+        assigns[:users].should == [@admin, @super_admin]
+      end
+    end
+  end
 end

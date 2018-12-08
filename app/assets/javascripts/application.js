@@ -37,3 +37,31 @@ function c(val){
   console.log(val);
   console.log('-----------------------------');
 }
+
+
+function titleCase(str) {
+  str = str.toLowerCase().split(' ');
+  for (var i = 0; i < str.length; i++) {
+    str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+  }
+  return str.join(' ');
+}
+
+function clickCopy(selector){
+  $(selector).click(function(e){
+    e.preventDefault();
+
+    let input = $(e.target);
+    let value = input.val();
+
+    input.select();
+
+    document.execCommand('copy');
+    $(e.target).blur();
+    input.val('copied!');
+
+    window.setTimeout(function(){
+      input.val(value);
+    }, 1500);
+  });
+}

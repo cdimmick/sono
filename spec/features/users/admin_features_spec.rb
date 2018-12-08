@@ -38,11 +38,11 @@ describe 'Admin Features', type: :feature do
       user.facilities.first.should == @admin.facility
     end
 
-    it 'should redirect to users_path' do
+    it 'should redirect to new_event_path' do
       visit '/users/new'
       user_min
       click_button 'Create User'
-      page.current_path.should == '/users'
+      page.current_path.should == '/events/new'
     end
 
     it 'should deliver a new user email' do
@@ -65,6 +65,14 @@ describe 'Admin Features', type: :feature do
 
       admin.role.should == 'admin'
       admin.facility.should == @admin.facility
+    end
+
+    it 'should redirect to users_path' do
+      visit '/users/new'
+      user_min
+      select 'Admin', from: 'user_role'
+      click_button 'Create User'
+      page.current_path.should == "/users"
     end
   end
 end

@@ -19,4 +19,10 @@ class ApplicationController < ActionController::Base
       redirect_to facilities_path, alert: 'Please select a Facility to act as.'
     end
   end
+
+  def authenticate_user_is_not_signed_in!
+    if user_signed_in?
+      redirect_to root_path, alert: 'You must sign out to view that resource.'
+    end
+  end
 end

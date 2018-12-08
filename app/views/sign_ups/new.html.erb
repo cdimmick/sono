@@ -1,0 +1,94 @@
+<div id="new_sign_up">
+  <div class="container">
+    <h1>Sign Up</h1>
+
+    <% if @user.errors.any? || @event.errors.any? %>
+      <div class="row">
+        <div class="col-sm-12">
+          <div id="error_explanation">
+            <h2>Sign up failed.</h2>
+
+            <ul>
+              <% @user.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+
+              <% @event.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <%= form_for :sign_up, url: "/users/#{@admin.id}/sign_ups" do |f| %>
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="form-group">
+            <%= f.label :name %>
+            <%= f.text_field :name, class: 'form-control', value: @user.name,
+                  required: true, autofocus: true %>
+          </div>
+        </div>
+
+        <div class="col-sm-4">
+          <div class="form-group">
+            <%= f.label :email %>
+            <%= f.email_field :email, class: 'form-control',
+                  value: @user.email, required: true %>
+          </div>
+        </div>
+
+        <div class="col-sm-4">
+          <div class="form-group">
+            <%= f.label :phone %>
+            <%= f.phone_field :phone, class: 'form-control',
+                  value: @user.phone, required: true %>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="form-group">
+            <%= f.label :password %>
+            <%= f.password_field :password, class: 'form-control',
+                  required: true %>
+          </div>
+        </div>
+
+        <div class="col-sm-4">
+          <div class="form-group">
+            <%= f.label :password_confirmation %>
+            <%= f.password_field :password_confirmation,
+                  class: 'form-control', required: true %>
+          </div>
+        </div>
+        <div class="col-sm-4"></div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="form-group">
+            <%= f.label :start_time, 'Appointment Start Time' %>
+            <%= f.datetime_field :start_time, class: 'form-control',
+                  value: @event.start_time, required: true %>
+          </div>
+        </div>
+
+        <div class="col-sm-4"></div>
+
+        <div class="col-sm-4"></div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group">
+            <%= f.submit 'Submit', class: 'btn btn-primary' %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

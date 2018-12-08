@@ -16,17 +16,20 @@
   <% end %>
 
   <div class="row">
-    <div class="col-sm-4">
-      <div class="form-group">
-        <%= form.label :user_id %>
-        <%= form.select :user_id, users.map{ |u| [u.name, u.id]},
-                        {include_blank: true}, class: 'form-control' %>
-      </div>
-    </div>
     <div class="col-sm-8">
       <div class="form-group">
         <%= form.label :start_time %>
-        <%= form.datetime_select :start_time, class: 'form-control' %>
+        <%= form.datetime_field :start_time, class: 'form-control' %>
+      </div>
+    </div>
+
+    <div class="col-sm-4">
+      <div class="form-group">
+        <% if local_assigns[:users] %>
+          <%= form.label :user_id %>
+          <%= form.select :user_id, users.map{ |u| [u.name, u.id]},
+                          {include_blank: true}, class: 'form-control' %>
+        <% end %>
       </div>
     </div>
   </div>

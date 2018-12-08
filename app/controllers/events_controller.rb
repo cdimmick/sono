@@ -19,8 +19,13 @@ class EventsController < ApplicationController
     @event = Event.new(user_id: params[:user_id])
   end
 
-  # def edit
-  # end
+  def edit
+    if user_is?('admin') && current_user.facility != @event.admin.facility
+      redirect_to root_path, alert: 'You are not allowed to edit that resource.'
+    else
+      render :edit
+    end
+  end
 
   def create
     @event = Event.new(event_params)
@@ -30,25 +35,26 @@ class EventsController < ApplicationController
       if @event.save
         UsersMailer.new_event(@event.id)
         format.html { redirect_to @event, notice: 'Event was successfully created.' }
-        format.json { render :show, status: :created, location: @event }
+        # format.json { render :show, status: :created, location: @event }
       else
         format.html { render :new }
-        format.json { render json: @event.errors, status: :unprocessable_entity }
+        # format.json { render json: @event.errors, status: :unprocessable_entity }
       end
     end
   end
 
-  # def update
-  #   respond_to do |format|
-  #     if @event.update(event_params)
-  #       format.html { redirect_to @event, notice: 'Event was successfully updated.' }
-  #       format.json { render :show, status: :ok, location: @event }
-  #     else
-  #       format.html { render :edit }
-  #       format.json { render json: @event.errors, status: :unprocessable_entity }
-  #     end
-  #   end
-  # end
+  def update
+    respond_to do |format|
+      if @event.update(event_params)
+        UsersMailer.changed_event(@event.id)
+        format.html { redirect_to events_path, notice: 'Event was updated.' }
+        # format.json { render :show, status: :ok, location: @event }
+      else
+        format.html { render :edit }
+        # format.json { render json: @event.errors, status: :unprocessable_entity }
+      end
+    end
+  end
 
   def destroy
     if user_is?('admin') && @event.facility != current_user.facility

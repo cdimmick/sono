@@ -1,12 +1,10 @@
 <div id="users">
-  <div class="container-fluid">
+  <div class="container">
     <div class="row">
       <div class="col-sm-12">
         <%= link_to 'New', new_user_path, class: 'btn btn-primary float-right' %>
-        <h1>
-          Users
-          <small>for <%= @facility.name %></small>
-        </h1>
+
+        <h1>Admins</h1>
       </div>
     </div>
   </div>
@@ -17,6 +15,7 @@
         <thead class="thead-dark">
           <tr>
             <th data-sorter="name"><span>Name</span></th>
+            <th data-sorter="facility.name"><span>Facility</span></th>
             <th data-sorter="phone"><span>Phone</span></th>
             <th data-sorter="email"><span>Email</span></th>
             <th data-sorter="role"><span>Role</span></th>
@@ -36,11 +35,8 @@
   $(document).on('turbolinks:load', function(){
     let users = <%== render template: 'users/index.json',
                             locals: {users: @users} %>;
-
-    let admins = <%== render template: 'users/index.json',
-                            locals: {users: @admins} %>;
-
-    Users.show_admins = false;
-    Users.init(users.concat(admins));
+    // Same script as Users @ users/index.
+    Users.show_admins = true;
+    Users.init(users);
   });
 </script>
