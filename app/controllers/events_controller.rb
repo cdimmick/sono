@@ -15,6 +15,23 @@ class EventsController < ApplicationController
 
   def show
     @paid = true if params[:paid] == 'true'
+
+    respond_to do |format|
+      format.html do
+        @password_required = @event.password.blank? ? false : true
+        @password_required = false if @event.user == current_user
+        @password_required = false if user_signed_in? && current_user.facility == @event.facility
+        @password_required = false if user_is?('super_admin')
+        render :show
+      end
+
+      format.js do
+        puts params
+      end
+    end
+
+
+
   end
 
   def new
@@ -31,10 +48,9 @@ class EventsController < ApplicationController
 
   def create
     @event = Event.new(event_params)
-    @event.admin = current_user unless current_user.role == 'user'
 
     respond_to do |format|
-      if @event.save!
+      if @event.save
         UsersMailer.new_event(@event.id)
         format.html { redirect_to @event, notice: 'Event was successfully created.' }
         # format.json { render :show, status: :created, location: @event }
@@ -78,7 +94,7 @@ class EventsController < ApplicationController
 
   def event_params
     params.require(:event).permit(
-      :user_id, :facility_id, :admin_id, :start_time
+      :user_id, :facility_id, :admin_id, :start_time, :password
     )
   end
 

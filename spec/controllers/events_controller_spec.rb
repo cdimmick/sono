@@ -103,7 +103,88 @@ describe EventsController, type: :controller do
     end
   end # end Index
 
-  describe 'New' do
+  describe 'GET /events/:id' do
+    describe 'As Guest' do
+      it 'should set @require_password = true if Event has password' do
+        @event.update(password: ENV.fetch('PW'))
+        get :show, params: {id: @event.id}
+        assigns[:password_required].should == true
+      end
+
+      specify '@password_required should be false if @event has no password' do
+        get :show, params: {id: @event.id}
+        assigns[:password_required].should == false
+      end
+    end
+
+    describe 'As User' do
+      before do
+        sign_in @user
+      end
+
+      it "should set @require_password = false, if Event is user's, even if password is set" do
+        @event.update(password: ENV.fetch('PW'), user_id: @user.id)
+        get :show, params: {id: @event.id}
+        assigns[:password_required].should == false
+      end
+
+      it 'should set @require_password to true if Event is NOT user AND PW is set' do
+        @event.update(password: ENV.fetch('PW'))
+        get :show, params: {id: @event.id}
+        assigns[:password_required].should == true
+      end
+
+      specify '@password_required should be false if @event has no password' do
+        get :show, params: {id: @event.id}
+        assigns[:password_required].should == false
+      end
+    end
+
+    describe 'As Admin' do
+      before do
+        sign_in @admin
+      end
+
+      it 'should set @required_password to true if @admin is not associated with @event' do
+        new_event = create(:event, password: ENV.fetch('PW'))
+        get :show, params: {id: new_event.id}
+        assigns[:password_required].should == true
+      end
+
+      it 'should set @require_password if @admin is @event.admin' do
+        @event.update(password: ENV.fetch('PW'))
+        get :show, params: {id: @event.id}
+        assigns[:password_required].should == false
+      end
+
+      it 'should set @require_password to false if @admin is associated with @event' do
+        new_admin = create(:admin, facility_id: @admin.facility.id)
+        @event.update(admin_id: new_admin.id, password: ENV.fetch('PW'))
+        get :show, params: {id: @event.id}
+        assigns[:password_required].should == false
+      end
+
+      specify '@password_required should be false if @event has no password' do
+        @event.update(password: ENV.fetch('PW'))
+        get :show, params: {id: @event.id}
+        assigns[:password_required].should == false
+      end
+    end
+
+    describe 'As Super Admin' do
+      before do
+        sign_in @super_admin
+      end
+
+      it 'should set @password_required to true even is password is set' do
+        @event.update(password: ENV.fetch('PW'))
+        get :show, params: {id: @event.id}
+        assigns[:password_required].should == false
+      end
+    end
+  end # end Show
+
+  describe 'GET /events/new' do
     specify 'Guests cannot access' do
       expect(get :new).to redirect_to(root_path)
       flash[:alert].should == 'You must be an Admin to view that resource.'
@@ -231,10 +312,16 @@ describe EventsController, type: :controller do
       it 'should be able to create an Event' do
         expect{ post :create, params: @event_params }.to change{ Event.count }.by(1)
 
-        event = Event.last
+        event = assigns[:event]
 
         event.start_time.to_i.should == @event_params[:event][:start_time].to_i
         event.user = @user
+      end
+
+      it 'should save password' do
+        @event_params[:event][:password] = ENV.fetch('PW')
+        post :create, params: @event_params
+        assigns[:event].password.should == ENV.fetch('PW')
       end
 
       it 'should redirect to the new Event' do

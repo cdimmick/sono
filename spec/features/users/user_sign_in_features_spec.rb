@@ -11,9 +11,9 @@ describe 'User Features', type: :feature do
   end
 
   it 'should fail to log in if user is not :active' do
-    @user.update(active: false) 
+    @user.update(active: false)
     login @user
-    page.current_path.should == '/u/sign_in'
+    page.current_path.should == '/u/sign_in' 
   end
 
   it 'should add a new facility to user, if facility_id is provided as param' do

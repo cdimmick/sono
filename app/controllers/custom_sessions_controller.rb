@@ -11,6 +11,5 @@ class CustomSessionsController < Devise::SessionsController
     return if facility_id.blank?
 
     current_user.facilities << Facility.find(facility_id)
-    # current_user.save!
   end
 end

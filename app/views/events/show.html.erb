@@ -1,12 +1,47 @@
 <div id="event">
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-12">
-        <% unless @paid %>
-          <%= render partial: 'charges/form',
-                     locals: {callback: event_url(@event)} %>
-        <% end %>
+  <% if @password_required %>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-4">
+
+        </div>
+        <div class="col-sm-4">
+          <h1>Password required</h1>
+          <div class="form-group">
+            <input type="password" name="password" id="password"
+                   class="form-control" placeholder="Password" autofocus />
+          </div>
+          <div class="form-group text-center">
+            <button id="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
+        <div class="col-sm-4">
+
+        </div>
       </div>
     </div>
-  </div>
+  <% else %>
+    <%= render partial: 'show_inner' %>
+  <% end %>
 </div>
+
+<script>
+  function submitEventPassword(ajax_url){
+    $('#submit').click(function(){
+      let password = $('#password').val();
+      $.ajax({
+        method: 'GET',
+        url: ajax_url,
+        data: {
+          user: {
+            password: password
+          }
+        }
+      })
+    });
+  }
+
+  $(document).on('turbolinks:load', function(){
+    submitEventPassword("<%= event_path(@event) %>");
+  });
+</script>

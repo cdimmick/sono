@@ -1,0 +1,10 @@
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <% unless @paid %>
+        <%= render partial: 'charges/form',
+                   locals: {callback: event_url(@event)} %>
+      <% end %>
+    </div>
+  </div>
+</div>

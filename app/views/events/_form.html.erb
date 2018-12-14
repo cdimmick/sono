@@ -1,4 +1,10 @@
 <%= form_with(model: event, local: true) do |form| %>
+  <% if user_is?('user') %>
+    <%= form.hidden_field :user_id, value: current_user.id %>
+  <% else %>
+    <%= form.hidden_field :admin_id, value: current_user.id %>
+  <% end %>
+
   <% if event.errors.any? %>
     <div class="row">
       <div class="col-sm-12">
@@ -19,7 +25,7 @@
   <% end %>
 
   <div class="row">
-    <div class="col-sm-8">
+    <div class="col-sm-4">
       <div class="form-group">
         <%= form.label :start_time %>
         <%= form.datetime_field :start_time, class: 'form-control' %>
@@ -36,10 +42,20 @@
 
         <% if user_is?('user') %>
           <%= form.label :facility_id %>
+          <% selected = current_user.patronages.last.facility.id if current_user.facilities.last %>
           <%= form.select :facility_id,
                           current_user.facilities.map{ |u| [u.name, u.id] },
-                          {selected: current_user.facilities.last.id},
+                          {selected: selected},
                           class: 'form-control' %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="col-sm-4">
+      <div class="form-group">
+        <% if user_is?('user') %>
+          <%= form.label :password %>
+          <%= form.password_field :password, class: 'form-control' %>
         <% end %>
       </div>
     </div>
