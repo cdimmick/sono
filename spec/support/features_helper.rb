@@ -27,4 +27,13 @@ module FeaturesHelper
 
     attrs
   end
+
+  def event_min
+    attrs = attributes_for(:event)
+
+    fill_in 'event_start_time', with: attrs[:start_time]
+    # need to select first option
+
+    attrs
+  end
 end

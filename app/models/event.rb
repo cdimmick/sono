@@ -1,7 +1,8 @@
 class Event < ApplicationRecord
   belongs_to :user
-  belongs_to :admin, class_name: 'User'
-  belongs_to :facility, optional: true
+  belongs_to :admin, class_name: 'User', optional: true
+  belongs_to :facility
+  # , optional: true
 
   has_many :charges
 
@@ -12,12 +13,12 @@ class Event < ApplicationRecord
     "#{id}-#{created_at.to_i}"
   end
 
-  before_save :set_facility
+  before_validation :set_facility
 
   private
 
   def set_facility
-    self.facility_id = admin.facility_id
+    self.facility_id = admin.facility_id if admin
   end
 
   def starts_after_now

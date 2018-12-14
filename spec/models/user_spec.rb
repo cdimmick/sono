@@ -84,7 +84,27 @@ describe User, type: :model do
               .to raise_error(ArgumentError, 'Only Super Admins should use this method')
       end
     end
-  end
+
+    describe 'facility_to_add=(facility_id)' do
+      before do
+        @facility = create(:facility)
+      end
+
+      it "should add the facility, provided by id, to @user's :facilities" do
+        expect{ @user.facility_to_add=(@facility.id) }
+              .to change{ @user.facilities.include?(@facility) }
+              .from(false).to(true)
+      end
+      # 
+      # it 'should accept a nil value and ignore it' do
+      #   @user.facility_to_add=(nil).should == nil
+      # end
+      #
+      # it 'should accept and empty string, and ignore it' do
+      #   @user.facility_to_add=('').should == nil
+      # end
+    end
+  end # Methods
 
   describe 'Scopes' do
     before do

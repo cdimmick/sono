@@ -38,6 +38,11 @@ class User < ApplicationRecord
     update(facility_id: facility.id)
   end
 
+  def facility_to_add=(id)
+    return if id.blank?
+    facilities << Facility.find(id)
+  end
+
   before_validation :admin_validations
 
   scope :users, -> { where(role: 'user') }

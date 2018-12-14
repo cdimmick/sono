@@ -1,1 +1,6 @@
-asfd
+<div id="user">
+  <div class="container">
+    <h1>Create a <%= I18n.t 'app.name' %> Event</h1>
+    <%= render partial: 'events/form', locals: {event: @event} %>
+  </div>
+</div>

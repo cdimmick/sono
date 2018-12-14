@@ -3,7 +3,10 @@
     <div class="row">
       <div class="col-sm-12">
         <div id="error_explanation">
-          <h2><%= pluralize(event.errors.count, "error") %> prohibited this event from being saved:</h2>
+          <h2>
+            <%= pluralize(event.errors.count, "error") %>
+            prohibited this event from being saved:
+            </h2>
 
           <ul>
           <% event.errors.full_messages.each do |message| %>
@@ -29,6 +32,14 @@
           <%= form.label :user_id %>
           <%= form.select :user_id, users.map{ |u| [u.name, u.id]},
                           {include_blank: true}, class: 'form-control' %>
+        <% end %>
+
+        <% if user_is?('user') %>
+          <%= form.label :facility_id %>
+          <%= form.select :facility_id,
+                          current_user.facilities.map{ |u| [u.name, u.id] },
+                          {selected: current_user.facilities.last.id},
+                          class: 'form-control' %>
         <% end %>
       </div>
     </div>

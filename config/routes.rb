@@ -9,8 +9,8 @@ Rails.application.routes.draw do
 
   resources :events
 
-  devise_for :users, path: 'u'
-  
+  devise_for :users, path: 'u', controllers: {sessions: 'custom_sessions'}
+
   resources :users do
     member do
       delete 'deactivate'

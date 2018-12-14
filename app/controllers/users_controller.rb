@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:edit, :update, :destroy, :deactivate, :show]
 
   def show
-
+    @event = Event.new
   end
 
   def admins

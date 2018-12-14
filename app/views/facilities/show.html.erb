@@ -3,14 +3,15 @@
     <h1><%= @facility.name %></h1>
 
     <div class="row">
-      <div class="col-4">
+      <div class="col-sm-4">
         <h6>Your Sign Up URL:</h6>
       </div>
-      <div class="col-8">
-        <input type="text" value="<%= "/u/sign_up?key=#{current_user.to_param}" %>"
+      <div class="col-sm-6">
+        <input type="text" value="<%= new_user_registration_url(facility_id: current_user.facility_id) %>"
                class="sign_up_url click_to_copy"
-               style="width:100%;text-align:left" />
+               style="width:100%;" />
       </div>
+      <div class="col-sm-2"></div>
     </div>
 
     <div class="row" style="margin-top:40px;">
@@ -20,7 +21,11 @@
         <% events = @facility.events
                              .where('start_time <= ?', now.end_of_day)
                              .where('start_time >= ?', now.beginning_of_day) %>
-        <%= render partial: 'events/list', locals: {events: events} %>
+        <% if events.count > 0 %>
+          <%= render partial: 'events/list', locals: {events: events} %>
+        <% else %>
+          <h4>None</h4>
+        <% end %>
       </div>
     </div>
   </div>

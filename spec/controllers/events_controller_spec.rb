@@ -207,19 +207,53 @@ describe EventsController, type: :controller do
     end
   end # New
 
-  describe 'POST /users' do
-    specify 'Guests cannot create' do
-      expect(post :create, params: {event: attributes_for(:event)})
-            .to redirect_to(root_url)
-      flash[:alert].should == 'You must be an Admin to view that resource.'
+  describe 'POST /events' do
+    before do
+      @event_params = {
+        event: attributes_for(
+          :event,
+          user_id: @user.id,
+          facility_id: @admin.facility.id)
+      }
     end
 
-    specify 'Users cannot create' do
-      sign_in @user
+    specify 'Guests cannot create' do
+      expect(post :create, params: @event_params)
+            .to redirect_to(new_user_session_path)
+      flash[:alert].should == 'You need to sign in or sign up before continuing.'
+    end
 
-      expect(post :create, params: {event: attributes_for(:event)})
-            .to redirect_to(root_url)
-      flash[:alert].should == 'You must be an Admin to view that resource.'
+    context 'As User' do
+      before do
+        sign_in @user
+      end
+
+      it 'should be able to create an Event' do
+        expect{ post :create, params: @event_params }.to change{ Event.count }.by(1)
+
+        event = Event.last
+
+        event.start_time.to_i.should == @event_params[:event][:start_time].to_i
+        event.user = @user
+      end
+
+      it 'should redirect to the new Event' do
+        expect(post :create, params: @event_params)
+              .to redirect_to("/events/#{assigns(:event).id}")
+        flash[:notice].should == 'Event was successfully created.'
+      end
+
+      it 'should send an email to user' do
+        post :create, params: @event_params
+        expect(UsersMailer).to have_received(:new_event).with(assigns[:event].id)
+      end
+
+      it 'should not create a New Event if params are missing' do
+        @event_params[:event][:user_id] = nil
+        expect{ post :create, params: @event_params }
+              .not_to change{ Event.count }
+        expect(response).to render_template(:new)
+      end
     end
 
     context 'Admin' do
@@ -228,30 +262,30 @@ describe EventsController, type: :controller do
       end
 
       it 'should be able to create an Event' do
-        attrs = attributes_for(:event, user_id: @user.id)
-        expect{ post :create, params: {event: attrs} }
+        expect{ post :create, params: @event_params }
               .to change{ Event.count }.by(1)
 
         event = Event.last
 
-        event.start_time.to_i.should == attrs[:start_time].to_i
+        event.start_time.to_i.should == @event_params[:event][:start_time].to_i
         event.user = @user
         event.admin = @admin
       end
 
       it 'should redirect to the new Event' do
-        expect(post :create, params: {event: attributes_for(:event, user_id: @user.id)})
+        expect(post :create, params: @event_params)
               .to redirect_to("/events/#{assigns(:event).id}")
         flash[:notice].should == 'Event was successfully created.'
       end
 
       it 'should send an email to user' do
-        post :create, params: {event: attributes_for(:event, user_id: @user.id)}
+        post :create, params: @event_params
         expect(UsersMailer).to have_received(:new_event).with(assigns[:event].id)
       end
 
       it 'should not create a New Event if params are missing' do
-        expect{ post :create, params: {event: attributes_for(:event)} } # user_id not provided
+        @event_params[:event][:user_id] = nil
+        expect{ post :create, params: @event_params }
               .not_to change{ Event.count }
         expect(response).to render_template(:new)
       end
@@ -264,7 +298,7 @@ describe EventsController, type: :controller do
 
       context 'Without acting_as set' do
         it 'should redirect to users' do
-          expect(post :create, params: {event: attributes_for(:event)})
+          expect(post :create, params: @event_params)
                 .to redirect_to(facilities_path)
           flash[:alert].should == 'Please select a Facility to act as.'
         end
@@ -274,27 +308,36 @@ describe EventsController, type: :controller do
         before do
           @super_admin.update(facility_id: @admin.facility.id)
         end
+
         it 'should be able to create an Event' do
-          attrs = attributes_for(:event, user_id: @user.id)
-          expect{ post :create, params: {event: attrs} }
+          expect{ post :create, params: @event_params }
                 .to change{ Event.count }.by(1)
 
           event = Event.last
 
-          # event.start_time.strftime('%D%r').should == attrs[:start_time].strftime('%D%r')
+          event.start_time.in_time_zone('Alaska').strftime('%D%r').should ==
+               @event_params[:event][:start_time].in_time_zone('Alaska').strftime('%D%r')
           event.user = @user
           event.admin = @super_admin
         end
 
         it 'should redirect to the new Event' do
-          expect(post :create, params: {event: attributes_for(:event, user_id: @user.id)})
+          expect(post :create, params: @event_params)
                .to redirect_to("/events/#{assigns(:event).id}")
           flash[:notice].should == 'Event was successfully created.'
         end
 
         it 'should send an email to user' do
-          post :create, params: {event: attributes_for(:event, user_id: @user.id)}
+          post :create, params: @event_params
           expect(UsersMailer).to have_received(:new_event).with(assigns[:event].id)
+        end
+
+        it 'should not create a New Event if params are missing' do
+          @event_params[:event][:user_id] = nil
+
+          expect{ post :create, params: @event_params }
+                .not_to change{ Event.count }
+          expect(response).to render_template(:new)
         end
       end
     end

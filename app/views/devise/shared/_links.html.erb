@@ -1,6 +1,6 @@
-<%- if controller_name != 'sessions' %>
-  <% if key = params[:key] %>
-    <%= link_to "Log in", "#{new_session_path(resource_name)}?key=#{key}" %><br />
+<%- if controller_name != 'custom_sessions' %>
+  <% if facility_id = params[:facility_id] %>
+    <%= link_to "Log in", "#{new_session_path(resource_name)}?facility_id=#{facility_id}" %><br />
   <% else %>
     <%= link_to "Log in", new_session_path(resource_name) %><br />
   <% end %>

@@ -1,6 +1,8 @@
 class EventsController < ApplicationController
-  before_action :authenticate_admin!, except: [:show]
+  before_action :authenticate_admin!, except: [:show, :create]
+  before_action :authenticate_user!, only: [:create]
   before_action :authenticate_super_admin_has_acting_as_set!, except: [:show, :destroy]
+
   before_action :set_event, only: [:show, :edit, :update, :destroy]
   before_action :set_facility, except: [:show]
   before_action :set_users, only: [:new]
@@ -29,10 +31,10 @@ class EventsController < ApplicationController
 
   def create
     @event = Event.new(event_params)
-    @event.admin = current_user
+    @event.admin = current_user unless current_user.role == 'user'
 
     respond_to do |format|
-      if @event.save
+      if @event.save!
         UsersMailer.new_event(@event.id)
         format.html { redirect_to @event, notice: 'Event was successfully created.' }
         # format.json { render :show, status: :created, location: @event }
@@ -75,7 +77,9 @@ class EventsController < ApplicationController
   end
 
   def event_params
-    params.require(:event).permit(:user_id, :facility_id, :admin_id, :start_time)
+    params.require(:event).permit(
+      :user_id, :facility_id, :admin_id, :start_time
+    )
   end
 
   def set_facility
