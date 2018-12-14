@@ -19,4 +19,12 @@ module FeaturesHelper
     fill_in 'user_email', with: attrs[:email]
     attrs
   end
+
+  def user_sign_up_min
+    attrs = user_min
+    fill_in 'user_password', with: ENV.fetch('PW')
+    fill_in 'user_password_confirmation', with: ENV.fetch('PW')
+
+    attrs
+  end
 end

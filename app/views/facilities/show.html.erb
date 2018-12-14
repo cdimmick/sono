@@ -7,7 +7,7 @@
         <h6>Your Sign Up URL:</h6>
       </div>
       <div class="col-8">
-        <input type="text" value="<%= sign_ups_new_user_url(current_user) %>"
+        <input type="text" value="<%= "/u/sign_up?key=#{current_user.to_param}" %>"
                class="sign_up_url click_to_copy"
                style="width:100%;text-align:left" />
       </div>

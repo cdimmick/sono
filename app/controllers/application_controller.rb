@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include UserHelper
+  before_action :configure_permitted_parameters, if: :devise_controller?
 
   def authenticate_super_admin!
     unless user_can?('super_admin')
@@ -24,5 +25,11 @@ class ApplicationController < ActionController::Base
     if user_signed_in?
       redirect_to root_path, alert: 'You must sign out to view that resource.'
     end
+  end
+
+  protected
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :phone, :admin_to_add])
   end
 end

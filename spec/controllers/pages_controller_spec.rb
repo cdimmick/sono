@@ -14,7 +14,7 @@ describe PagesController, type: :controller do
 
     specify 'Users should' do
       sign_in @user
-      expect(get :router).to redirect_to(users_path(@user))
+      expect(get :router).to redirect_to("/users/#{@user.to_param}")
     end
 
     specify 'Admin should redirect to facility' do

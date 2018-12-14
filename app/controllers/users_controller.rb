@@ -1,14 +1,14 @@
 class UsersController < ApplicationController
   before_action :authenticate_super_admin!, only: [:admins]
   before_action :authenticate_admin!, except: [:show]
-  before_action :authenticate_super_admin_has_acting_as_set!, except: [:deactivate, :admins]
+  before_action :authenticate_super_admin_has_acting_as_set!, except: [:deactivate, :admins, :show]
   before_action :set_facility, except: [:deactivate, :admins, :show]
   before_action :set_users, except: [:edit, :new, :destroy, :deactivate, :admins, :show]
   before_action :set_admins, except: [:edit, :new, :destroy, :deactivate, :admins, :show]
   before_action :set_user, only: [:edit, :update, :destroy, :deactivate, :show]
 
   def show
-    
+
   end
 
   def admins

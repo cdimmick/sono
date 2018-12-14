@@ -8,7 +8,7 @@ describe 'User Features', type: :feature do
   context 'Active User' do
     it 'should be able to log in' do
       login @user
-      page.current_path.should == '/'
+      page.current_path.should == "/users/#{@user.to_param}"
     end
 
     it 'should fail to log in if user is not :active' do

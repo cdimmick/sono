@@ -36,9 +36,9 @@ describe 'Facility Features', type: :feature do
         select Address::STATES[state], from: 'facility_address_attributes_state'
         fill_in 'facility_address_attributes_zip', with: zip
 
-        expect{ click_button 'Create' }
-              .to change{ [Facility.count, Address.count] }
-              .by([1, 1])
+        address_count = Address.count
+        expect{ click_button 'Create' }.to change{ Facility.count }.by(1)
+        Address.count.should == address_count + 1
 
         facility = Facility.last
 

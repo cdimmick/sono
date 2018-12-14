@@ -10,6 +10,7 @@
 #         name: Faker::Name.name,
 #         phone: Faker::PhoneNumber.phone_number,
 #         email: Faker::Internet.email,
+#         start_time: Time.now + 1.day,
 #         password: ENV.fetch('PW'),
 #         password_confirmation: ENV.fetch('PW')
 #       }

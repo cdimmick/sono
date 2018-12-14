@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   resources :events
 
   devise_for :users, path: 'u'
-
+  
   resources :users do
     member do
       delete 'deactivate'
