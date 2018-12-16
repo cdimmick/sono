@@ -7,7 +7,11 @@ Rails.application.routes.draw do
 
   resources :facilities
 
-  resources :events
+  resources :events do
+    member do
+      post 'invite'
+    end
+  end
 
   devise_for :users, path: 'u', controllers: {sessions: 'custom_sessions'}
 

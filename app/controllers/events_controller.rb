@@ -1,11 +1,19 @@
 class EventsController < ApplicationController
-  before_action :authenticate_admin!, except: [:show, :create, :edit, :update]
-  before_action :authenticate_user!, only: [:create, :edit, :update]
+  before_action :authenticate_admin!, except: [:show, :create, :edit, :update, :invite]
+  before_action :authenticate_user!, only: [:create, :edit, :update, :invite]
   before_action :authenticate_super_admin_has_acting_as_set!, except: [:show, :destroy]
 
-  before_action :set_event, only: [:show, :edit, :update, :destroy]
-  before_action :set_facility, except: [:show, :update]
+  before_action :set_event, only: [:show, :edit, :update, :destroy, :invite]
+  before_action :set_facility, except: [:show, :update, :invite]
   before_action :set_users, only: [:new]
+
+  def invite
+    params[:emails].split(/, ?/).each do |email|
+      GuestsMailer.invite(@event.id, email).deliver_later
+    end
+
+    redirect_to @event, notice: 'Your Guests have been invited.'
+  end
 
   def index
     @events = @facility.events
@@ -53,8 +61,8 @@ class EventsController < ApplicationController
 
     respond_to do |format|
       if @event.save
-        UsersMailer.new_event(@event.id)
-        FacilitiesMailer.new_event(@event.id) #TODO spec
+        UsersMailer.new_event(@event.id).deliver_later
+        FacilitiesMailer.new_event(@event.id).deliver_later
         format.html { redirect_to @event, notice: 'Event was successfully created.' }
       else
         format.html do
@@ -78,8 +86,8 @@ class EventsController < ApplicationController
           if user_is?('user') && @event.user != current_user
             redirect_to root_path, alert: 'You must be an Admin to view that resource.'
           else
-            UsersMailer.changed_event(@event.id)
-            FacilitiesMailer.changed_event(@event.id)
+            UsersMailer.changed_event(@event.id).deliver_later
+            FacilitiesMailer.changed_event(@event.id).deliver_later
 
             redirect_path = user_is?('user') ? user_path(@event.user) : events_path
             redirect_to redirect_path, notice: 'Event was updated.'

@@ -8,6 +8,13 @@ describe EventsController, type: :controller do
     @event = create(:event, admin_id: @admin.id)
   end
 
+  describe 'POST /events/:id/invite' do
+    specify '' do
+      pending 'Spec this'
+      true.should == false
+    end
+  end # Invite
+
   describe 'GET /events' do
     specify 'Guests cannot access' do
       expect(get :index).to redirect_to(root_path)

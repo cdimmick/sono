@@ -1,16 +1,53 @@
-<div class="container">
-  <div class="row">
-    <div class="col-sm-12">
-      <% if user_can?('admin') || @event.user == current_user %>
-        <div class="float-right">
-          <%= link_to 'Edit', edit_event_path(@event), class: 'btn btn-primary' %>
-        </div>
-      <% end %>
-
-      <% unless @paid %>
-        <%= render partial: 'charges/form',
-                   locals: {callback: event_url(@event)} %>
-      <% end %>
+<div id="events">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <% if user_can?('admin') || @event.user == current_user %>
+          <div class="float-right" style="margin-bottom:20px;">
+            <%= link_to 'Edit', edit_event_path(@event), class: 'btn btn-primary' %>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
+
+  <div class="container" id="stream">
+    <div class="row">
+      <div class="col-sm-12">
+        <div style="width:100%;height:600px;background-color:black"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="text-center" style="margin-top:20px;">
+          <h2>Purchase a copy for $12.50</h2>
+          <%= render partial: 'charges/form', locals: {callback: event_url(@event)} %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if @event.user == current_user %>
+    <div class="container" id="invite" style="margin-top:100px;">
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>
+            Invite People
+            <small>seperate with commas</small>
+          </h3>
+
+          <%= form_tag invite_event_path(@event) do %>
+            <div class="form-group">
+              <%= text_field_tag :emails, '', class: 'form-control', placeholder: 'List emails' %>
+            </div>
+
+            <div class="form-group float-right">
+              <%= submit_tag 'Submit', class: 'btn btn-primary' %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </div>
