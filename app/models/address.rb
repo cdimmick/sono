@@ -33,13 +33,14 @@ class Address < ApplicationRecord
     STATES[state]
   end
 
-  def to_s
+  def to_s(street_delineator = ', ')
     s = ''
     s += street.to_s
     s += " #{number}" unless number.blank?
     s += ", #{street2}" unless street2.blank?
     s += ", #{street3}" unless street3.blank?
-    s += ", #{city}, #{state} #{zip}"
+    s += street_delineator
+    s += "#{city}, #{state} #{zip}"
     s
   end
 end

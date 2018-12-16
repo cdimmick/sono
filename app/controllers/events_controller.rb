@@ -1,6 +1,6 @@
 class EventsController < ApplicationController
-  before_action :authenticate_admin!, except: [:show, :create]
-  before_action :authenticate_user!, only: [:create]
+  before_action :authenticate_admin!, except: [:show, :create, :edit, :update]
+  before_action :authenticate_user!, only: [:create, :edit, :update]
   before_action :authenticate_super_admin_has_acting_as_set!, except: [:show, :destroy]
 
   before_action :set_event, only: [:show, :edit, :update, :destroy]
@@ -26,12 +26,13 @@ class EventsController < ApplicationController
       end
 
       format.js do
-        puts params
+        if event_params[:password] == @event.password
+          render :show
+        else
+          render json: {error: 'password incorrect'}, status: :unprocessable_entity
+        end
       end
     end
-
-
-
   end
 
   def new
@@ -52,11 +53,11 @@ class EventsController < ApplicationController
     respond_to do |format|
       if @event.save
         UsersMailer.new_event(@event.id)
+        FacilitiesMailer.new_event(@event.id) #TODO spec
         format.html { redirect_to @event, notice: 'Event was successfully created.' }
-        # format.json { render :show, status: :created, location: @event }
       else
+        set_users
         format.html { render :new }
-        # format.json { render json: @event.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -64,12 +65,15 @@ class EventsController < ApplicationController
   def update
     respond_to do |format|
       if @event.update(event_params)
-        UsersMailer.changed_event(@event.id)
-        format.html { redirect_to events_path, notice: 'Event was updated.' }
-        # format.json { render :show, status: :ok, location: @event }
+        format.html do
+          UsersMailer.changed_event(@event.id)
+          FacilitiesMailer.changed_event(@event.id)
+
+          redirect_path = user_is?('user') ? user_path(@event.user) : events_path
+          redirect_to redirect_path, notice: 'Event was updated.'
+        end
       else
         format.html { render :edit }
-        # format.json { render json: @event.errors, status: :unprocessable_entity }
       end
     end
   end

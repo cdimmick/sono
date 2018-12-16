@@ -1,36 +1,5 @@
-<!-- <div id="home">
+<div id="home">
   <div class="container">
     <h1>Home</h1>
   </div>
 </div>
- -->
-
-<a href="https://anysoft.us/" class="append_id">Test</a><br><br>
-<a href="https://anysoft.us/?param=1" class="append_id">Test</a>
-
-<script>
-  function appendLinkIds(){
-      var search_params = new URLSearchParams(window.location.search);
-      var id = search_params.get("TID");
-
-      if(id == null){ return; } // exit function if no TID exists
-
-      var links = document.getElementsByClassName("append_id");
-      for(var i = 0; i < links.length; i++){
-        var link = links[i];
-        var href = link.getAttribute("href");
-
-        if(href.indexOf("?") > 0){ // if link to append has a query string
-          href += "&"
-        } else {
-          href += "?"
-        }
-
-        href += "TID=" + id;
-
-        link.setAttribute("href", href);
-      }
-  }
-
-  appendLinkIds();
-</script>

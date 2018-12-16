@@ -55,7 +55,7 @@
       <div class="form-group">
         <% if user_is?('user') %>
           <%= form.label :password %>
-          <%= form.password_field :password, class: 'form-control' %>
+          <%= form.text_field :password, class: 'form-control' %>
         <% end %>
       </div>
     </div>

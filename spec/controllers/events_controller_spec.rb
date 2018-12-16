@@ -376,6 +376,16 @@ describe EventsController, type: :controller do
               .not_to change{ Event.count }
         expect(response).to render_template(:new)
       end
+
+      describe 'Failure' do
+        it 'should assign all Facility users to @users' do
+          facility_user = create(:user)
+          facility_user.facilities << @admin.facility
+          @event_params[:event][:start_time] = nifl
+          put :update, params: @event_params
+          assigns(:users).should == [facility_user]
+        end
+      end
     end
 
     context 'As Super Admin' do
@@ -488,6 +498,17 @@ describe EventsController, type: :controller do
           put :update, params: @event_params
         end
 
+
+        it 'should assign all Facility users to @users' do
+          facility_user = create(:user)
+          facility_user.facilities << @admin.facility
+          @event_params[:event][:start_time] = nil
+
+          put :update, params: @event_params
+          assigns(:users).should == [facility_user]
+        end
+
+
         it 'should render :edit' do
           expect(response).to render_template(:edit)
         end
@@ -508,7 +529,7 @@ describe EventsController, type: :controller do
   end
 
   describe 'GET /users/:id/edit' do
-    specify 'Guests cannot delete' do
+    specify 'Guests cannot edit' do
       expect(get :edit, params: {id: @event.id}).to redirect_to(root_path)
       flash[:alert].should == 'You must be an Admin to view that resource.'
     end

@@ -1,17 +1,17 @@
 <div id="user">
   <div id="new_event" class="container">
-    <h1>Create a <%= I18n.t 'app.name' %> Event</h1>
+    <h1>
+      Create a <%= I18n.t 'app.name' %> Event
+      <small>for <%= @user.name %></small>
+    </h1>
+
     <%= render partial: 'events/form', locals: {event: @event} %>
   </div>
 
-  <div id="events" class="container">
-    <h1><%= I18n.t 'app.name' %>Events</h1>
-    <ul id="event_list">
-      <% @user.events.each do |event| %>
-        <li>
-          <%= link_to 'event', event %>
-        </li>
-      <% end %>
-    <ul>
-  </div>
+  <% unless @user.events.empty? %>
+    <div id="events" class="container">
+      <h1><%= I18n.t 'app.name' %>Events</h1>
+      <%= render partial: '/users/event_table', locals: {user: @user} %>
+    </div>
+  <% end %>
 </div>

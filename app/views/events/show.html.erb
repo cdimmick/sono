@@ -9,7 +9,8 @@
           <h1>Password required</h1>
           <div class="form-group">
             <input type="password" name="password" id="password"
-                   class="form-control" placeholder="Password" autofocus />
+                   class="form-control" placeholder="Password" autofocus
+                   autocomplete="password" />
           </div>
           <div class="form-group text-center">
             <button id="submit" class="btn btn-primary">Submit</button>
@@ -26,21 +27,6 @@
 </div>
 
 <script>
-  function submitEventPassword(ajax_url){
-    $('#submit').click(function(){
-      let password = $('#password').val();
-      $.ajax({
-        method: 'GET',
-        url: ajax_url,
-        data: {
-          user: {
-            password: password
-          }
-        }
-      })
-    });
-  }
-
   $(document).on('turbolinks:load', function(){
     submitEventPassword("<%= event_path(@event) %>");
   });

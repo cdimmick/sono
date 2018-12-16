@@ -1,0 +1,47 @@
+<table id="event_table" class="table table-striped">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Facility</th>
+      <th>Address</th>
+      <th>Contact</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% user.events.sort_by{ |e| e.start_time }.each do |event| %>
+      <% event.reload %>
+      <% facility = event.facility %>
+      <% address = facility.address %>
+      <% admin = event.admin.blank? ? facility.admins.active.first : event.admin %>
+      <% is_in_the_past = event.start_time < Time.now %>
+      <% row_class = is_in_the_past ? 'danger_highlight' : '' %>
+
+      <%= content_tag :tr, class: row_class do %>
+        <td>
+          <strong>
+            <%= event.start_time.strftime('%B %e %Y') %><br>
+            <%= event.start_time.strftime('%l:%m %p') %>
+          </strong>
+        </td>
+        <td><%= facility.name %></td>
+        <td><small><%= "#{address.to_s('<br>')}".html_safe %></small></td>
+        <td><%= admin.name %></td>
+        <td><small><%= mail_to admin.email %></small></td>
+        <td><%= link_to admin.phone || '', "tel:#{admin.phone}" %></td>
+        <td>
+          <%= link_to 'View', event, class: 'btn btn-primary btn-sm' %>
+        </td>
+        <td>
+          <% unless is_in_the_past %>
+            <%= link_to 'Edit', edit_event_path(event), class: 'btn btn-info btn-sm' %>
+          <% end %>
+        </td>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>

@@ -31,6 +31,8 @@ Facility.destroy_all
   f.address = a
   f.save!
 
+  User.create!(role: 'admin', email: "admin_#{f.id}@test.com", password: 'Password123!', name: "Admin #{f.id}", facility_id: f.id)
+
   puts "Facility #{n} created!"
 end
 

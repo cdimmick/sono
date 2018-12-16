@@ -30,6 +30,8 @@
 //= require_tree ./users/models
 //= require_tree ./users/collections
 //= require_tree ./users/views
+
+//= require events
 //= require_tree .
 
 function c(val){
