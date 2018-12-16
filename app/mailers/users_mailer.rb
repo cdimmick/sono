@@ -5,7 +5,7 @@ class UsersMailer < ApplicationMailer
 
     mail(
       to: @user.email,
-      subject: "Your new Account on.." #TODO
+      subject: "Your new Account on.."
     )
   end
 

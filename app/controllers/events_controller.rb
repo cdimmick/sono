@@ -62,7 +62,7 @@ class EventsController < ApplicationController
     respond_to do |format|
       if @event.save
         UsersMailer.new_event(@event.id).deliver_later
-        FacilitiesMailer.new_event(@event.id).deliver_later
+        FacilitiesMailer.new_event(@event.id).deliver_later unless user_is?('admin')
         format.html { redirect_to @event, notice: 'Event was successfully created.' }
       else
         format.html do

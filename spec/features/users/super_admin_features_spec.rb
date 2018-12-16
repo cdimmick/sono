@@ -49,6 +49,7 @@ describe 'Super Admin Features', type: :feature do
 
       it 'should deliver a new user email' do
         allow(UsersMailer).to receive(:new_user).and_call_original
+
         visit '/users/new'
         user_min
         click_button 'Create User'
