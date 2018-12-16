@@ -30,14 +30,20 @@
           </li>
         <% end %>
 
-        <li class="nav-item">
           <% if user_signed_in? %>
-            <%= link_to 'Sign out', destroy_user_session_path,
-                method: :delete, class: 'nav-link' %>
+            <li class="nav-item">
+              <%= link_to 'Account', edit_user_registration_path(current_user),
+                           class: 'nav-link' %>
+            </li>
+            <li class="nav-item">
+              <%= link_to 'Sign out', destroy_user_session_path,
+                  method: :delete, class: 'nav-link' %>
+            </li>
           <% else %>
-            <%= link_to 'Sign in', new_user_session_path, class: 'nav-link' %>
+            <li class="nav-item">
+              <%= link_to 'Sign in', new_user_session_path, class: 'nav-link' %>
+            </li>
           <% end %>
-        </li>
       </ul>
     </div>
   </div>

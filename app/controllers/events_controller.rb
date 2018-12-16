@@ -4,7 +4,7 @@ class EventsController < ApplicationController
   before_action :authenticate_super_admin_has_acting_as_set!, except: [:show, :destroy]
 
   before_action :set_event, only: [:show, :edit, :update, :destroy]
-  before_action :set_facility, except: [:show]
+  before_action :set_facility, except: [:show, :update]
   before_action :set_users, only: [:new]
 
   def index
@@ -40,7 +40,8 @@ class EventsController < ApplicationController
   end
 
   def edit
-    if user_is?('admin') && current_user.facility != @event.admin.facility
+    if user_is?('admin') && current_user.facility != @event.admin.facility ||
+       user_is?('user') && current_user != @event.user
       redirect_to root_path, alert: 'You are not allowed to edit that resource.'
     else
       render :edit
@@ -56,21 +57,33 @@ class EventsController < ApplicationController
         FacilitiesMailer.new_event(@event.id) #TODO spec
         format.html { redirect_to @event, notice: 'Event was successfully created.' }
       else
-        set_users
-        format.html { render :new }
+        format.html do
+          if user_is?('user')
+            @user = current_user
+            render 'users/show'
+          else
+            set_users
+            render :new
+          end
+        end
       end
     end
   end
 
   def update
+
     respond_to do |format|
       if @event.update(event_params)
         format.html do
-          UsersMailer.changed_event(@event.id)
-          FacilitiesMailer.changed_event(@event.id)
+          if user_is?('user') && @event.user != current_user
+            redirect_to root_path, alert: 'You must be an Admin to view that resource.'
+          else
+            UsersMailer.changed_event(@event.id)
+            FacilitiesMailer.changed_event(@event.id)
 
-          redirect_path = user_is?('user') ? user_path(@event.user) : events_path
-          redirect_to redirect_path, notice: 'Event was updated.'
+            redirect_path = user_is?('user') ? user_path(@event.user) : events_path
+            redirect_to redirect_path, notice: 'Event was updated.'
+          end
         end
       else
         format.html { render :edit }

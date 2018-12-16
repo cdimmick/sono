@@ -40,7 +40,7 @@
                           {include_blank: true}, class: 'form-control' %>
         <% end %>
 
-        <% if user_is?('user') %>
+        <% if user_is?('user') && event.new_record? %>
           <%= form.label :facility_id %>
           <% selected = current_user.patronages.last.facility.id if current_user.facilities.last %>
           <%= form.select :facility_id,

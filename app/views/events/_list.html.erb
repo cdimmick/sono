@@ -1,33 +1,38 @@
-<% events.group_by{ |e| e.start_time.strftime('%B') }.each do |month, month_group| %>
-  <div class="month">
+<table id="appointment_table" class="table">
+  <% events.group_by{ |e| e.start_time.strftime('%B') }.each do |month, month_group| %>
     <% month_group.group_by{ |e| e.start_time.strftime('%e') }.each do |day, day_group| %>
-      <div class="day">
-        <h3>
-          <%= month %>
-          <small><%= day %></small>
-        </h3>
+      <tr class="header_row">
+        <td colspan="5">
+          <h3>
+            <%= month %>
+            <small><%= day %></small>
+          </h3>
 
-        <ul class="appointments">
-          <% day_group.each do |event| %>
-            <% user = event.user %>
-            <li>
-              <span class="start_time">
-                <%= event.start_time.strftime('%l:%M %p') %>
-              </span>
-              <span class="name"><%= user.name %></span>
-              <span class="controls">
-                <input type="text" value="<%= event.stream_token %>"
-                        class="stream_token click_to_copy" />
-                <span><%= link_to 'Edit', edit_event_path(event) %></span>
-                <span><%= link_to 'View', event %></span>
-              </span>
-            </li>
-          <% end %>
-        </ul>
-      </div>
+        </td>
+      </tr>
+
+      <% day_group.each do |event| %>
+        <% user = event.user %>
+        <tr>
+          <td class="start_time">
+            <%= event.start_time.strftime('%l:%M %p') %>
+          </td>
+          <td class="name"><%= user.name %></td>
+          <td>
+            <input type="text" value="<%= event.stream_token %>"
+                    class="stream_token click_to_copy" />
+          </td>
+          <td>
+            <%= link_to 'View', event, class: 'btn btn-primary btn-sm' %>
+          </td>
+          <td>
+            <%= link_to 'Edit', edit_event_path(event), class: 'btn btn-info btn-sm' %>
+          </td>
+        </tr>
+      <% end %>
     <% end %>
-  </div>
-<% end %>
+  <% end %>
+</table>
 
 <script>
   $(document).on('turbolinks:load', function(){

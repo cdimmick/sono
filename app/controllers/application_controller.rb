@@ -14,7 +14,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-
   def authenticate_super_admin_has_acting_as_set!
     return unless user_is?('super_admin')
 

@@ -2,9 +2,6 @@ require 'rails_helper'
 
 describe EventsController, type: :controller do
   before do
-    allow(UsersMailer).to receive(:changed_event).and_call_original
-    allow(UsersMailer).to receive(:new_event).and_call_original
-
     @user = create(:user)
     @super_admin = create(:super_admin)
     @admin = create(:admin)
@@ -290,6 +287,9 @@ describe EventsController, type: :controller do
 
   describe 'POST /events' do
     before do
+      allow(UsersMailer).to receive(:new_event).and_call_original
+      allow(FacilitiesMailer).to receive(:new_event).and_call_original
+
       @event_params = {
         event: attributes_for(
           :event,
@@ -335,11 +335,22 @@ describe EventsController, type: :controller do
         expect(UsersMailer).to have_received(:new_event).with(assigns[:event].id)
       end
 
-      it 'should not create a New Event if params are missing' do
-        @event_params[:event][:user_id] = nil
-        expect{ post :create, params: @event_params }
-              .not_to change{ Event.count }
-        expect(response).to render_template(:new)
+      it 'should send an email to Facility' do
+        post :create, params: @event_params
+        expect(FacilitiesMailer).to have_received(:new_event).with(assigns[:event].id)
+      end
+
+      context 'Failure' do
+        before do
+          @event_params[:event][:user_id] = nil
+        end
+        it 'should not create a New Event if params are missing' do
+          expect{ post :create, params: @event_params }.not_to change{ Event.count }
+        end
+
+        it 'should render users/show' do
+          expect(post :create, params: @event_params).to render_template('users/show')
+        end
       end
     end
 
@@ -370,6 +381,11 @@ describe EventsController, type: :controller do
         expect(UsersMailer).to have_received(:new_event).with(assigns[:event].id)
       end
 
+      it 'should send an email to Facility' do
+        post :create, params: @event_params
+        expect(FacilitiesMailer).to have_received(:new_event).with(assigns[:event].id)
+      end
+
       it 'should not create a New Event if params are missing' do
         @event_params[:event][:user_id] = nil
         expect{ post :create, params: @event_params }
@@ -381,8 +397,8 @@ describe EventsController, type: :controller do
         it 'should assign all Facility users to @users' do
           facility_user = create(:user)
           facility_user.facilities << @admin.facility
-          @event_params[:event][:start_time] = nifl
-          put :update, params: @event_params
+          @event_params[:event][:start_time] = nil
+          post :create, params: @event_params
           assigns(:users).should == [facility_user]
         end
       end
@@ -429,6 +445,11 @@ describe EventsController, type: :controller do
           expect(UsersMailer).to have_received(:new_event).with(assigns[:event].id)
         end
 
+        it 'should send an email to Facility' do
+          post :create, params: @event_params
+          expect(FacilitiesMailer).to have_received(:new_event).with(assigns[:event].id)
+        end
+
         it 'should not create a New Event if params are missing' do
           @event_params[:event][:user_id] = nil
 
@@ -442,6 +463,8 @@ describe EventsController, type: :controller do
 
   describe 'PUT /users/:id' do
     before do
+      allow(UsersMailer).to receive(:changed_event).and_call_original
+      allow(FacilitiesMailer).to receive(:changed_event).and_call_original
       @event_params = {
         id: @event.id,
         event: attributes_for(:event, start_time: @event.start_time + 1.day)
@@ -449,14 +472,67 @@ describe EventsController, type: :controller do
     end
 
     specify 'Guests cannot update' do
-      expect(put :update, params: {id: @event.id}).to redirect_to(root_path)
-      flash[:alert].should == 'You must be an Admin to view that resource.'
+      expect(put :update, params: {id: @event.id})
+            .to redirect_to(new_user_session_path)
+      flash[:alert].should == 'You need to sign in or sign up before continuing.'
     end
 
-    specify 'Users cannot update' do
-      sign_in @user
-      expect(put :update, params: {id: @event.id}).to redirect_to(root_path)
-      flash[:alert].should == 'You must be an Admin to view that resource.'
+    context 'As User' do
+      before do
+        @event.update(user_id: @user.id)
+        sign_in @user
+      end
+
+      it "should not allow user to edit another user's Event" do
+        new_event = create(:event)
+        @event_params[:id] = new_event.id
+        expect(put :update, params: @event_params).to redirect_to(root_path)
+        flash[:alert].should == 'You must be an Admin to view that resource.'
+      end
+
+      it 'should update @event' do
+        @time = @event.start_time
+
+        expect{ put :update, params: @event_params }
+              .to change{ @event.reload.start_time.to_i }
+              .from(@time.to_i).to(@event_params[:event][:start_time].to_i)
+      end
+
+      context 'Success' do
+        before do
+          put :update, params: @event_params
+        end
+
+        it 'should assign @event' do
+          assigns[:event].should == @event
+        end
+
+        it 'should redirect to /events' do
+          expect(response).to redirect_to(user_path(@user))
+          flash[:notice].should == 'Event was updated.'
+        end
+
+        it 'should send an email to @event.user' do
+          expect(UsersMailer).to have_received(:changed_event)
+                .with(assigns[:event].id)
+        end
+
+        it 'should send an email to @event.facility' do
+          expect(FacilitiesMailer).to have_received(:changed_event)
+                .with(assigns[:event].id)
+        end
+      end
+
+      context 'Failure' do
+        before do
+          @event_params[:event][:start_time] = nil
+        end
+
+        it 'should render :edit' do
+          put :update, params: @event_params
+          expect(response).to render_template(:edit)
+        end
+      end
     end
 
     context 'As Admin' do
@@ -490,6 +566,10 @@ describe EventsController, type: :controller do
           expect(UsersMailer).to have_received(:changed_event)
                 .with(assigns[:event].id)
         end
+
+        it 'should send an email to Facility' do
+          expect(FacilitiesMailer).to have_received(:changed_event).with(assigns[:event].id)
+        end
       end
 
       context 'Failure' do
@@ -497,17 +577,6 @@ describe EventsController, type: :controller do
           @event_params[:event][:start_time] = nil
           put :update, params: @event_params
         end
-
-
-        it 'should assign all Facility users to @users' do
-          facility_user = create(:user)
-          facility_user.facilities << @admin.facility
-          @event_params[:event][:start_time] = nil
-
-          put :update, params: @event_params
-          assigns(:users).should == [facility_user]
-        end
-
 
         it 'should render :edit' do
           expect(response).to render_template(:edit)
@@ -530,14 +599,31 @@ describe EventsController, type: :controller do
 
   describe 'GET /users/:id/edit' do
     specify 'Guests cannot edit' do
-      expect(get :edit, params: {id: @event.id}).to redirect_to(root_path)
-      flash[:alert].should == 'You must be an Admin to view that resource.'
+      expect(get :edit, params: {id: @event.id}).to redirect_to(new_user_session_path)
+      flash[:alert].should == 'You need to sign in or sign up before continuing.'
     end
 
-    specify 'Users cannot delete' do
-      sign_in @user
-      expect(get :edit, params: {id: @event.id}).to redirect_to(root_path)
-      flash[:alert].should == 'You must be an Admin to view that resource.'
+    context 'As User' do
+      before do
+        @event.update(user_id: @user.id)
+        sign_in @user
+      end
+
+      it 'should render :edit' do
+        expect(get :edit, params: {id: @event.id})
+              .to render_template(:edit)
+      end
+
+      it 'should assign @event' do
+        get :edit, params: {id: @event.id}
+        assigns[:event].should == @event
+      end
+
+      it "should prevent User from accessing edit for an event that isn't theirs" do
+        new_event = create(:event)
+        expect(get :edit, params: {id: new_event.id}).to redirect_to(root_path)
+        flash[:alert].should == 'You are not allowed to edit that resource.'
+      end
     end
 
     context 'As Admin' do
