@@ -28,4 +28,12 @@ class UsersMailer < ApplicationMailer
       subject: 'Changed Appt'
     )
   end
+
+  def new_charge(charge_id)
+    @charge = Charge.find(charge_id)
+    mail(
+      to: @charge.event.user.email,
+      subject: "New Charge"
+    )
+  end
 end

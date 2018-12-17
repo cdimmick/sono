@@ -1,21 +1,21 @@
-Geocoder.configure(lookup: :test)
-
-Geocoder::Lookup::Test.set_default_stub(
-  [
-    {
-      'coordinates'  => [40.7143528, -74.0059731],
-      'address'      => 'New York, NY, USA',
-      'state'        => 'New York',
-      'state_code'   => 'NY',
-      'country'      => 'United States',
-      'country_code' => 'US'
-    }
-  ]
-)
+# Geocoder.configure(lookup: :test)
+#
+# Geocoder::Lookup::Test.set_default_stub(
+#   [
+#     {
+#       'coordinates'  => [40.7143528, -74.0059731],
+#       'address'      => 'New York, NY, USA',
+#       'state'        => 'New York',
+#       'state_code'   => 'NY',
+#       'country'      => 'United States',
+#       'country_code' => 'US'
+#     }
+#   ]
+# )
 
 Facility.destroy_all
 
-50.times do |n|
+10.times do |n|
   f = Facility.new(
     name: Faker::Company.name,
     phone: Faker::PhoneNumber.phone_number
@@ -39,6 +39,11 @@ end
 User.destroy_all
 
 facility = Facility.all.sample
+
+facility.address.street = '4218 S. Mt. Angeles Rd.'
+facility.address.city = "Port Angeles"
+facility.address.state = "WA"
+facility.address.zip = "98362"
 
 User.create(role: 'user', email: 'user@test.com', password: 'Password123!', name: Faker::Name.name)
 admin = User.create(role: 'admin', email: 'admin@test.com', password: 'Password123!', facility_id: facility.id, name: Faker::Name.name)

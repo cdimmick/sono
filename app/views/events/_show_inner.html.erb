@@ -21,8 +21,11 @@
     <div class="row">
       <div class="col-sm-12">
         <div class="text-center" style="margin-top:20px;">
-          <h2>Purchase a copy for $12.50</h2>
-          <%= render partial: 'charges/form', locals: {callback: event_url(@event)} %>
+          <% if @event.charges.count == 0 %>
+            <%= render partial: 'charges/form', locals: {event: @event} %>
+          <% else %>
+            <h2>A copy of this Stream has already been purchased.</h2>
+          <% end %>
         </div>
       </div>
     </div>

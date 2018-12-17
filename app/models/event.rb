@@ -23,6 +23,16 @@ class Event < ApplicationRecord
 
   def starts_after_now
     return unless start_time
-    errors.add(:start_time, "must be after now") unless start_time >= Time.now
+
+    puts '............................'
+    puts start_time.to_i
+    puts start_time # this is in UTC time. So the time provided, is in UTC. Needs to be in local TZ
+    puts Time.now.to_i
+    puts Time.now
+    puts '............................'
+
+    unless Time.parse(start_time.to_s).to_i > Time.now.to_i
+      errors.add(:start_time, "must be after now")
+    end
   end
 end

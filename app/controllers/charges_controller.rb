@@ -1,29 +1,61 @@
 class ChargesController < ApplicationController
+  before_action :authenticate_super_admin!, only: [:index, :delete]
+  before_action :set_charge, only: [:destroy]
+
   def create
-    callback = params[:callback]
-    amount = 12.50
+    @event = Event.find(params[:event_id])
+
+    if @event.charges.count > 0
+      render json: {message: 'A copy of SonoStream has already beem purchased.'}
+      return
+    end
+
     email = params[:stripeEmail]
-    token = params[:stripeToken]
+    amount = params[:amount]
 
     begin
-      stripe_client.charge(
+      charge = stripe_client.charge(
         email,
-        token,
+        params[:stripeToken],
         amount,
         description: 'Sonostream Live'
       )
 
-      # Send email, create Charge, Spec this.
-      GuestsMailer.purchase()
+      # TODO: Send email, create Charge, Spec this.
+      @charge = Charge.create!(
+        event_id: @event.id,
+        amount: amount,
+        email: email,
+        stripe_id: charge[:id]
+      )
 
-      notice = "Thank you for your purchase. You will recieve an email with further instructions."
-      redirect_to "#{callback}?paid=true", notice: notice
-    rescue Stripe::CardError => e
-      redirect_to "#{callback}?paid=false", alert: e.message
+      GuestsMailer.new_charge(@charge.id).deliver_later
+      UsersMailer.new_charge(@charge.id).deliver_later
+
+      render json: {message: 'Thank you for your purchase.'}
+    rescue Stripe::CardError => card_error
+      render json: {message: card_error}, status: :unprocessable_entity
+    rescue Stripe::InvalidRequestError => invalid_stripe_request
+      render json: {message: invalid_stripe_request}, status: :unprocessable_entity
     end
   end
 
+  def index
+    #TODO spec
+    @charges = Charge.all
+  end
+
+  def destroy
+    #TODO spec
+    @charge.destroy
+    redirect_to charges_path, notice: 'Charge has been destroyed'
+  end
+
   private
+
+  def set_charge
+    @charge = Charge.find(params[:id])
+  end
 
   def stripe_client
     @stripe_client ||= StripeClient.new

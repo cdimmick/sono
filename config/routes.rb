@@ -27,5 +27,5 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :charges, only: [:create]
+  resources :charges, only: [:create, :index, :destroy]
 end

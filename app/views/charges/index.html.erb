@@ -1,0 +1,63 @@
+<div id="charges">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <table class="table table-striped">
+          <thead class="thead-dark">
+            <tr>
+              <th>Date</th>
+              <th>User</th>
+              <th>Guest</th>
+              <th>Event</th>
+              <th>Stripe Id</th>
+              <th>Amount</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @charges.each do |charge| %>
+              <tr>
+                <td>
+                  <%= charge.created_at.strftime('%b %e, %Y') %>
+                </td>
+                <td>
+                  <%= mail_to charge.event.user.email %>
+                </td>
+                <td>
+                  <%= mail_to charge.email %>
+                </td>
+                <td>
+                  <%= link_to 'View', event_path(charge.event),
+                              class: 'btn btn-primary btn-sm' %>
+                <td>
+                  <%= charge.stripe_id %>
+                </td>
+                <td>
+                  <%= number_to_currency(charge.amount) %>
+                </td>
+                <td>
+                  <%= link_to 'Destroy', charge_path(charge),
+                              method: 'DELETE', class: 'btn btn-sm btn-danger',
+                              data: {confirm: 'Are you sure? This is permanent!'} %>
+                </td>
+              </tr>
+            <% end %>
+
+            <tr style="font-weight:800">
+              <td>Total:</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>
+                <% total = @charges.inject(0){ |sum, charge| sum += charge.amount } %>
+                <%= number_to_currency(total) %>
+              </td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

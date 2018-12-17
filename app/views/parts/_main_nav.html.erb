@@ -26,6 +26,9 @@
 
         <% if user_can?('super_admin') %>
           <li class="nav-item">
+            <%= link_to 'Charges', charges_path, class: 'nav-link' %>
+          </li>
+          <li class="nav-item">
             <%= link_to 'Admins', admins_users_path, class: 'nav-link' %>
           </li>
         <% end %>

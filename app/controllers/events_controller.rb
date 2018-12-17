@@ -22,8 +22,6 @@ class EventsController < ApplicationController
   end
 
   def show
-    @paid = true if params[:paid] == 'true'
-
     respond_to do |format|
       format.html do
         @password_required = @event.password.blank? ? false : true

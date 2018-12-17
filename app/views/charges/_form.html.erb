@@ -1,10 +1,38 @@
-<%= form_tag charges_path do %>
-  <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-          data-key="<%= Rails.configuration.stripe[:publishable_key] %>"
-          data-description="Sonosteam Live"
-          data-amount="1250"
-          data-locale="auto">
-  </script>
+<div id="new_charge">
+  <h2>Purchase a copy for $12.50</h2>
 
-  <%= hidden_field_tag :callback_path, callback %>
-<% end %>
+  <%= form_tag charges_path, id: 'stripe_checkout_form' do %>
+    <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+            data-key="<%= Rails.configuration.stripe[:publishable_key] %>"
+            data-description="Sonosteam Live"
+            data-amount="1250"
+            data-locale="auto">
+    </script>
+
+    <%= hidden_field_tag :event_id, event.id %>
+    <%= hidden_field_tag :amount, "12.50" %>
+  <% end %>
+</div>
+
+<script>
+  $('#stripe_checkout_form').get(0).submit = function(){
+    let form = $(this);
+    let data = form.serializeArray();
+
+    $.ajax({
+      url: form.prop('action'),
+      method: form.prop('method'),
+      data: data,
+      success: function(response){
+        let msg = '<h2>' + response['message'] + '</h2>';
+        $('#new_charge').html(msg);
+      },
+      error: function(error){
+        let msg = '<h2 class="text-danger">' + error['responseJSON']['message'] + '</h2>';
+        $('#new_charge').html(msg);
+      }
+    });
+
+    return false;
+  };
+</script>

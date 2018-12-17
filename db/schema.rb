@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 2018_12_14_105359) do
     t.string "state"
     t.string "zip"
     t.integer "has_address_id"
-    t.integer "has_address_type"
+    t.string "has_address_type"
     t.float "latitude"
     t.float "longitude"
     t.datetime "created_at", null: false
@@ -30,7 +30,8 @@ ActiveRecord::Schema.define(version: 2018_12_14_105359) do
 
   create_table "charges", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "email"
-    t.string "stripe_token"
+    t.string "stripe_id"
+    t.float "amount"
     t.integer "event_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

@@ -15,5 +15,6 @@ describe Charge, type: :model do
   describe 'Validations' do
     it{ should validate_presence_of :email }
     it{ should validate_presence_of :stripe_token }
+    it{ should validate_presence_of :amount }
   end
 end

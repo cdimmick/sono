@@ -388,11 +388,6 @@ describe EventsController, type: :controller do
         expect(UsersMailer).to have_received(:new_event).with(assigns[:event].id)
       end
 
-      it 'should send an email to Facility' do
-        post :create, params: @event_params
-        expect(FacilitiesMailer).to have_received(:new_event).with(assigns[:event].id)
-      end
-
       it 'should not create a New Event if params are missing' do
         @event_params[:event][:user_id] = nil
         expect{ post :create, params: @event_params }

@@ -9,7 +9,7 @@ class CreateAddresses < ActiveRecord::Migration[5.2]
       t.string :state
       t.string :zip
       t.integer :has_address_id
-      t.integer :has_address_type
+      t.string :has_address_type
       t.float :latitude
       t.float :longitude
 
