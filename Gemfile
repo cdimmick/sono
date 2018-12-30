@@ -37,6 +37,7 @@ gem 'backbone-on-rails'
 gem 'ejs'
 
 gem 'geocoder'
+gem 'timezone', '~> 1.0'
 
 gem 'stripe'
 

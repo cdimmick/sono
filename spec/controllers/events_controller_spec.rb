@@ -5,13 +5,48 @@ describe EventsController, type: :controller do
     @user = create(:user)
     @super_admin = create(:super_admin)
     @admin = create(:admin)
-    @event = create(:event, admin_id: @admin.id)
+    @event = create(:event, admin_id: @admin.id, user_id: @user.id)
   end
 
   describe 'POST /events/:id/invite' do
-    specify '' do
-      pending 'Spec this'
-      true.should == false
+    before do
+      allow(GuestsMailer).to receive(:invite).and_call_original
+      @emails = 'test1@test.com, test2@test.com,test3@test.com'
+    end
+
+    specify 'Guests cannot access' do
+      post :invite, params: {id: @event.id, emails: @emails}
+      expect(response).to redirect_to(new_user_session_path)
+    end
+
+    context 'As User' do
+      before do
+        sign_in @user
+      end
+
+      specify 'it should send an email to all email in params' do
+        post :invite, params: {id: @event.id, emails: @emails}
+        expect(GuestsMailer).to have_received(:invite).exactly(3).times
+      end
+
+      specify "Users should not be able to invite to other User's events" do
+        @event.update(user_id: create(:user).id)
+        post :invite, params: {id: @event.id, emails: @emails}
+        expect(response).to redirect_to root_path
+        flash[:alert].should == 'You must be an Admin to view that resource.'
+      end
+    end
+
+    context 'As Admin' do
+      before do
+        sign_in @admin
+      end
+
+      specify 'Only user can access' do
+        post :invite, params: {id: @event.id, emails: @emails}
+        expect(response).to redirect_to(root_path)
+        flash[:alert].should == 'You must be an Admin to view that resource.'
+      end
     end
   end # Invite
 
@@ -127,13 +162,13 @@ describe EventsController, type: :controller do
       end
 
       it "should set @require_password = false, if Event is user's, even if password is set" do
-        @event.update(password: ENV.fetch('PW'), user_id: @user.id)
+        @event.update(password: ENV.fetch('PW'))
         get :show, params: {id: @event.id}
         assigns[:password_required].should == false
       end
 
       it 'should set @require_password to true if Event is NOT user AND PW is set' do
-        @event.update(password: ENV.fetch('PW'))
+        @event.update(password: ENV.fetch('PW'), user_id: create(:user).id)
         get :show, params: {id: @event.id}
         assigns[:password_required].should == true
       end

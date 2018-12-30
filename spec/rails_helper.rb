@@ -32,6 +32,19 @@ RSpec.configure do |config|
 
   Geocoder.configure(lookup: :test)
 
+  # Geocoder::Lookup::Test.add_stub(
+  #   "Noplace, CA", [
+  #     {
+  #       'coordinates'  => [nil, nil],
+  #       'address'      => 'New York, NY, USA',
+  #       'state'        => 'New York',
+  #       'state_code'   => 'NY',
+  #       'country'      => 'United States',
+  #       'country_code' => 'US'
+  #     }
+  #   ]
+  # )
+
   Geocoder::Lookup::Test.set_default_stub(
     [
       {

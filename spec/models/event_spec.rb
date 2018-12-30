@@ -14,20 +14,6 @@ describe Event, type: :model do
 
   describe 'Validations' do
     it{ should validate_presence_of(:start_time) }
-
-    describe ':start_time' do
-      it 'must follow now on create' do
-        @event.update(start_time: Time.now - 1.second)
-        @event.valid?.should == false
-        @event.errors.messages[:start_time].include?('must be after now').should == true
-      end
-
-      it 'may be before now after create' do
-        @event.save!
-        @event.update(start_time: Time.now - 1.second)
-        @event.valid?.should == true
-      end
-    end
   end
 
   describe 'Methods' do

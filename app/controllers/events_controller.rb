@@ -8,8 +8,13 @@ class EventsController < ApplicationController
   before_action :set_users, only: [:new]
 
   def invite
+    if @event.user != current_user
+      redirect_to root_path, alert: 'You must be an Admin to view that resource.'
+      return
+    end
+
     params[:emails].split(/, ?/).each do |email|
-      GuestsMailer.invite(@event.id, email).deliver_later
+      GuestsMailer.invite(@event.id, email).deliver_now
     end
 
     redirect_to @event, notice: 'Your Guests have been invited.'
@@ -59,8 +64,8 @@ class EventsController < ApplicationController
 
     respond_to do |format|
       if @event.save
-        UsersMailer.new_event(@event.id).deliver_later
-        FacilitiesMailer.new_event(@event.id).deliver_later unless user_is?('admin')
+        UsersMailer.new_event(@event.id).deliver_now
+        FacilitiesMailer.new_event(@event.id).deliver_now unless user_is?('admin')
         format.html { redirect_to @event, notice: 'Event was successfully created.' }
       else
         format.html do
@@ -84,8 +89,8 @@ class EventsController < ApplicationController
           if user_is?('user') && @event.user != current_user
             redirect_to root_path, alert: 'You must be an Admin to view that resource.'
           else
-            UsersMailer.changed_event(@event.id).deliver_later
-            FacilitiesMailer.changed_event(@event.id).deliver_later
+            UsersMailer.changed_event(@event.id).deliver_now
+            FacilitiesMailer.changed_event(@event.id).deliver_now
 
             redirect_path = user_is?('user') ? user_path(@event.user) : events_path
             redirect_to redirect_path, notice: 'Event was updated.'

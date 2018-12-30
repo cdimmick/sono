@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :charge do
     email { Faker::Internet.email }
-    stripe_token { "_stripe_token" }
+    stripe_id { "_stripe_id" }
     event
   end
 end

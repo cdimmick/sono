@@ -13,10 +13,11 @@ class Facility < ApplicationRecord
 
   after_destroy :destroy_admins!
 
+
+
   private
 
   def destroy_admins!
     User.admins.where(facility_id: id).destroy_all
-    
   end
 end

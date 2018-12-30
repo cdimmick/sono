@@ -28,6 +28,7 @@ class Address < ApplicationRecord
   geocoded_by :to_s
 
   after_validation :geocode
+  after_validation :set_timezone
 
   def full_state
     STATES[state]
@@ -42,5 +43,11 @@ class Address < ApplicationRecord
     s += street_delineator
     s += "#{city}, #{state} #{zip}"
     s
+  end
+
+  private
+
+  def set_timezone
+    self.timezone = Timezone.lookup(latitude, longitude).name
   end
 end

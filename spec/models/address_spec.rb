@@ -20,12 +20,16 @@ describe Address, type: :model do
   describe 'Idioms' do
     describe 'Geocoding' do
       it 'should geocode when saved' do
-        VCR.use_cassette('models/address/geocodeing') do
-          expect{ @address.save! }
-                .to change{ [@address.latitude, @address.longitude] }
-                .from([nil, nil])
-                .to([40.7143528, -74.0059731]) # Values based on Geocoder stub in spec/rails_helper
-        end
+        expect{ @address.save! }
+              .to change{ [@address.latitude, @address.longitude] }
+              .from([nil, nil])
+              .to([40.7143528, -74.0059731]) # Values based on Geocoder stub in spec/rails_helper
+      end
+
+      it 'should save :timezone when saved' do
+        # testing info: https://github.com/panthomakos/timezone
+        expect{ @address.save! }.to change{ @address.timezone }
+              .from(nil).to('America/Los_Angeles')
       end
     end
   end

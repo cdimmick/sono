@@ -55,7 +55,7 @@ class UsersController < ApplicationController
     @user.facility = @facility if @user.role == 'admin'
 
     if @user.save
-      UsersMailer.new_user(@user.id, password).deliver_later if new_user
+      UsersMailer.new_user(@user.id, password).deliver_now if new_user
 
       notice = "#{@user.role.titlecase} has been created"
       if @user.role == 'user'

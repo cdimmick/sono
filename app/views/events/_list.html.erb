@@ -15,7 +15,7 @@
         <% user = event.user %>
         <tr>
           <td class="start_time">
-            <%= event.start_time.strftime('%l:%M %p') %>
+            <%= event.local_time.strftime('%l:%M %p') %>
           </td>
           <td class="name"><%= user.name %></td>
           <td>
