@@ -1,0 +1,16 @@
+<% content_for :body_heading do %>
+  Changed <%= t('app.name') %> Appointment
+<% end %>
+
+<div class="content">
+
+  <p>
+    <%= @user.name %> has changed their <%= t('app.name') %> appointment at
+    <%= @event.facility.name %> to
+    <%= display_datetime(@event.local_time) %>.
+  </p>
+
+  <p>
+    <%= link_to 'View Appointment', event_url(@event), class: 'cta' %>
+  </p>
+</div>

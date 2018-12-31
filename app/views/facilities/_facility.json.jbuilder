@@ -7,6 +7,7 @@ json.address do
   json.city address.city
   json.state address.full_state
   json.zip address.zip
+  json.timezone address.timezone
   json.longitude address.longitude
   json.latitude address.latitude
 end

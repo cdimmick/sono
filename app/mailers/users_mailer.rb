@@ -5,7 +5,7 @@ class UsersMailer < ApplicationMailer
 
     mail(
       to: @user.email,
-      subject: "Your new Account on.."
+      subject: "Your account has been created at #{t('app.site')}" 
     )
   end
 
@@ -15,7 +15,7 @@ class UsersMailer < ApplicationMailer
 
     mail(
       to: @user.email,
-      subject: 'New Appointment Sono'
+      subject: "New #{t('app.name')} appointment at #{@event.facility.name}"
     )
   end
 
@@ -25,7 +25,7 @@ class UsersMailer < ApplicationMailer
 
     mail(
       to: @user.email,
-      subject: 'Changed Appt'
+      subject: "Changed #{t('app.name')} appointment at #{@event.facility.name}"
     )
   end
 
@@ -33,7 +33,7 @@ class UsersMailer < ApplicationMailer
     @charge = Charge.find(charge_id)
     mail(
       to: @charge.event.user.email,
-      subject: "New Charge"
+      subject: "Someone has gifted a #{t('app.name')} to you!"
     )
   end
 end

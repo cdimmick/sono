@@ -5,7 +5,7 @@ class GuestsMailer < ApplicationMailer
 
     mail(
       to: email,
-      subject: 'You have been invited'
+      subject: "#{@user.name} has invited you to a #{t('app.name')}"
     )
   end
 
@@ -14,7 +14,7 @@ class GuestsMailer < ApplicationMailer
 
     mail(
       to: @charge.email,
-      subject: 'About your charge...'
+      subject: "Thank you for your #{t('app.name')} purchase"
     )
   end
 end

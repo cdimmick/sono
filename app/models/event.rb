@@ -16,10 +16,13 @@ class Event < ApplicationRecord
     start_time.in_time_zone(facility.address.timezone)
   end
 
+  def contact
+    #TODO spec
+    admin || facility.admins.active.first
+  end
+
   before_validation :set_facility
   after_validation :set_start_time
-
-
 
   private
 

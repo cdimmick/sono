@@ -4,8 +4,8 @@ class FacilitiesMailer < ApplicationMailer
     @user = @event.user
 
     mail(
-      to: @user.email,
-      subject: 'New Appointment Sono'
+      to: @event.contact.email,
+      subject: "New #{t('app.name')} Appointment: #{@user.name}"
     )
   end
 
@@ -14,8 +14,8 @@ class FacilitiesMailer < ApplicationMailer
     @user = @event.user
 
     mail(
-      to: @user.email,
-      subject: 'Changed Appt'
+      to: @event.contact.email,
+      subject: "#{t('app.name')} Appointment Changed: #{@user.name}"
     )
   end
 end

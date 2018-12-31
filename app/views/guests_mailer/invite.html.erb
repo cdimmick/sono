@@ -1,0 +1,14 @@
+<div class="content">
+  <p>
+    <%= @event.user.name %> has invited you a <%= t('app.name') %> at
+    <%= display_datetime(@event.local_time) %>.
+  </p>
+
+  <p>
+    TODO: Additional details.
+  </p>
+
+  <p>
+    <%= link_to t('app.name'), event_url(@event), class: "cta" %>
+  </p>
+</div>

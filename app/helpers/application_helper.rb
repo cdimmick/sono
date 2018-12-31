@@ -1,11 +1,5 @@
 module ApplicationHelper
-  def x
-    time = Time.now
-    8000000.times do |n|
-      puts n
-    end
-
-    puts "In #{Time.now - time} seconds"
+  def display_datetime(datetime)
+    datetime.strftime('%D @ %l:%M %p %Z')
   end
-
 end

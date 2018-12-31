@@ -1,5 +1,17 @@
-A user has been created.
+<p>
+  An account for you has been created at <%= link_to t('app.name'), root_url %>.
+  You can sign in with the link and credentils below.
+</p>
 
-You can sign in at <%= new_user_session_url %> with this email address and password: <%= @password %>.
+<p>
+  u: <%= @user.email %><br>
+  p: <%= @password %>
+</p>
 
-You may change this password at any time with the forgotten password link.
+<p>
+  <%= link_to 'Sign in', new_user_session_url, class: 'cta' %>
+</p>
+
+<p>
+  You may change this password at any time with the forgotten password link.
+</p>

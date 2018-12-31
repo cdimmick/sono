@@ -1,0 +1,17 @@
+<% content_for :body_heading do %>
+  Your <%= t('app.name') %> Appointment Has Changed
+<% end %>
+
+<div class="content">
+  <p>
+    Your <%= t('app.name') %> appointment has changed. Please click
+    the link below for details.
+  </p>
+  <p>
+    When: <strong><%= display_datetime(@event.local_time) %></strong><br>
+    Where: <strong><%= @event.facility.address.to_s %></strong><br>
+  </p>
+  <p>
+    <%= link_to t('app.name'), event_url(@event), class: 'cta' %>
+  </p>
+</div>
