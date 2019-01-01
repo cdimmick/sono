@@ -17,7 +17,7 @@
 //= require turbolinks
 //= require underscore
 //= require backbone
-//= require backbone_shared
+//= require backbone_shared 
 
 //= require facilities/facilities
 //= require_tree ../templates
