@@ -69,7 +69,7 @@ group :test do
   gem 'webmock'
   gem 'guard-rspec'
   gem 'vcr'
-  # gem 'launchy'
+  gem 'launchy'
   gem 'rails-controller-testing'
 end
 
