@@ -1,15 +1,23 @@
 class EventsController < ApplicationController
-  before_action :authenticate_admin!, except: [:show, :create, :edit, :update, :invite]
+  before_action :authenticate_admin!, except: [:show, :create, :edit, :update, :invite, :download]
   before_action :authenticate_user!, only: [:create, :edit, :update, :invite]
-  before_action :authenticate_super_admin_has_acting_as_set!, except: [:show, :destroy]
+  before_action :authenticate_super_admin_has_acting_as_set!, except: [:show, :destroy, :download]
 
-  before_action :set_event, only: [:show, :edit, :update, :destroy, :invite]
-  before_action :set_facility, except: [:show, :update, :invite]
+  before_action :set_event, only: [:show, :edit, :update, :destroy, :invite, :download]
+  before_action :set_facility, except: [:show, :update, :invite, :download]
   before_action :set_users, only: [:new]
+
+  def download
+    if @event.download_token == params[:token]
+      #TODO
+    else 
+      redirect_to root_path, alert: 'You are not allowed to view that resource.'
+    end
+  end
 
   def invite
     if @event.user != current_user
-      redirect_to root_path, alert: 'You must be an Admin to view that resource.'
+      redirect_to root_path, alert: 'Only the Event User may view this resource.'
       return
     end
 
@@ -17,7 +25,7 @@ class EventsController < ApplicationController
       GuestsMailer.invite(@event.id, email).deliver_now
     end
 
-    redirect_to @event, notice: 'Your Guests have been invited.'
+    redirect_to @event, notice: "#{params[:emails]} will be invited right away."
   end
 
   def index
@@ -82,7 +90,6 @@ class EventsController < ApplicationController
   end
 
   def update
-
     respond_to do |format|
       if @event.update(event_params)
         format.html do
@@ -92,7 +99,7 @@ class EventsController < ApplicationController
             UsersMailer.changed_event(@event.id).deliver_now
             FacilitiesMailer.changed_event(@event.id).deliver_now
 
-            redirect_path = user_is?('user') ? user_path(@event.user) : events_path
+            redirect_path = user_is?('user') ? user_path(@event.user) : event_path(@event)
             redirect_to redirect_path, notice: 'Event was updated.'
           end
         end

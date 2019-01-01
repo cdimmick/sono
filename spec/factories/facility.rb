@@ -1,7 +1,8 @@
 FactoryBot.define do
   factory :facility do
     name {Faker::Company.name}
-
+    address
+    
     factory :complete_facility do
       phone{ Faker::PhoneNumber.phone_number }
 

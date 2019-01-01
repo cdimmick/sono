@@ -11,10 +11,21 @@
     </div>
   </div>
 
-  <div class="container" id="stream">
+  <div class="container">
     <div class="row">
       <div class="col-sm-12">
-        <div style="width:100%;height:600px;background-color:black"></div>
+        <h1 class="text-center">
+          <%= "#{t('app.name')} Appointment for #{@event.user.name}" %><br>
+          <small><%= @event.local_time.strftime('%B %e, %Y @ %l:%M%P') %></small>
+        </h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <div id="stream">
+          <div style="width:100%;height:600px;background-color:black"></div>
+        </div>
       </div>
     </div>
 

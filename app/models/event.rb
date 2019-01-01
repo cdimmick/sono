@@ -11,27 +11,41 @@ class Event < ApplicationRecord
     "#{id}-#{created_at.to_i}"
   end
 
+
   def local_time
-    #TODO spec
-    start_time.in_time_zone(facility.address.timezone)
+    start_time.in_time_zone(facility.timezone)
   end
 
   def contact
-    #TODO spec
     admin || facility.admins.active.first
   end
 
   before_validation :set_facility
   after_validation :set_start_time
+  before_create :set_tokens
 
   private
 
-  def set_start_time
-    #TODO Spec
-    return unless facility && facility.address
+  def set_tokens
+    self.download_token = random_token
+  end
 
-    timezone = self.facility.address.timezone
-    start_time_string = self.start_time.strftime('%vT%R')
+  def random_token
+    s = ''
+    20.times do
+      s += %w|a b c d e f g h i j k l m n o p q r s t u v w x y z
+              A B C D E F G H I J K L M N O P Q R S T U V W Z Y Z
+              1 2 3 4 5 6 7 8 9 0 @ # $ % ^ *|.sample
+    end
+
+    s
+  end
+
+  def set_start_time
+    return unless facility && facility.timezone && start_time
+
+    timezone = facility.timezone
+    start_time_string = start_time.strftime('%vT%R')
     time_in_zone = ActiveSupport::TimeZone[timezone].parse(start_time_string)
 
     self.start_time = time_in_zone

@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   resources :events do
     member do
       post 'invite'
+      get 'download'
     end
   end
 

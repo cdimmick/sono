@@ -4,6 +4,6 @@ FactoryBot.define do
     user
     facility
 
-    start_time { Time.now + 1.day }
+    start_time { (Time.now + 1.day).strftime('%FT%T') }
   end
 end

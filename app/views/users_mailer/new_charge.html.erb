@@ -1,10 +1,14 @@
+<% event = @charge.event %>
+
 <div class="content">
   <p>
     <%= @charge.email %> has gifted you a video copy of your
-    <%= t('app.name') %>.
+    <%= t('app.name') %>. Download by clicking the link below.
   </p>
 
   <p>
-    <%= link_to 'Download', '#', class: 'cta' %>
+    <%= link_to 'Download',
+                download_event_url(event, token: event.download_token),
+                class: 'cta' %>
   </p>
 </div>

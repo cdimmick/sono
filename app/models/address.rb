@@ -48,6 +48,7 @@ class Address < ApplicationRecord
   private
 
   def set_timezone
+    return if errors.count > 0
     self.timezone = Timezone.lookup(latitude, longitude).name
   end
 end

@@ -6,6 +6,9 @@ describe FacilitiesController, type: :controller do
     @admin = create(:admin)
     @user = create(:user)
     @facility = create(:facility)
+
+    @facility_params = {facility: attributes_for(:facility)}
+    @facility_params[:facility][:address_attributes] = attributes_for(:address)
   end
 
   describe 'GET /facilities' do
@@ -93,7 +96,6 @@ describe FacilitiesController, type: :controller do
       it 'should set facilities on SuperAdmin' do
         expect{ get :show, params: {id: @facility.id} }
               .to change{ @super_admin.reload.facility }.from(nil).to(@facility)
-
       end
     end
   end
@@ -130,18 +132,18 @@ describe FacilitiesController, type: :controller do
     describe 'Permissions' do
       specify 'Only Super Admin can access' do
         sign_in @super_admin
-        expect(post :create, params: {facility: attributes_for(:facility)})
+        expect(post :create, params: @facility_params)
               .not_to redirect_to(root_url)
       end
 
       specify 'Lower Roles cannot' do
         sign_in @admin
-        expect(post :create, params: {facility: attributes_for(:facility)})
+        expect(post :create, params: @facility_params)
               .to redirect_to(root_url)
       end
 
       specify 'Non-signed in users cannot' do
-        expect(post :create, params: {facility: attributes_for(:facility)})
+        expect(post :create, params: @facility_params)
               .to redirect_to(root_url)
       end
     end
@@ -152,18 +154,17 @@ describe FacilitiesController, type: :controller do
       end
 
       it 'should create a new Facility' do
-        expect{ post :create, params: {facility: attributes_for(:facility)} }
+        expect{ post :create, params: @facility_params }
               .to change{ Facility.count }.by(1)
       end
 
       it 'should redirect to the new Facility' do
-        post :create, params: {facility: attributes_for(:facility)}
+        post :create, params: @facility_params
         response.should redirect_to Facility.last
       end
 
       it 'should accept address attributes' do
-        facility_params = {facility: attributes_for(:facility)}
-        facility_params[:facility][:address_attributes] = attributes_for(:address)
+        facility_params = @facility_params
 
         expect{ post :create, params: facility_params }
               .to change { Address.count }.by(1)

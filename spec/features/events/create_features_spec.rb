@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Create and edit Features', type: :feature do
+describe 'Create Features', type: :feature do
   before do
     @admin = create(:admin)
     @facility = @admin.facility
@@ -23,12 +23,12 @@ describe 'Create and edit Features', type: :feature do
       event = Event.last
 
       event.user.should == @user
-      event.start_time.to_i.should == attrs[:start_time].to_i
       event.facility.should == @facility
     end
 
     it 'should allow user to select different facilties' do
       new_facility = create(:facility)
+      new_facility.admins << create(:admin)
       @user.facilities << new_facility
 
       visit "/users/#{@user.id}"
@@ -48,6 +48,16 @@ describe 'Create and edit Features', type: :feature do
       fill_in 'event_password', with: ENV.fetch('PW')
       click_button 'Create Event'
       Event.last.password.should == ENV.fetch('PW')
+    end
+
+    it 'should save at the time submitted in local time' do
+      visit "/users/#{@user.id}"
+      attrs = event_min
+      click_button 'Create Event'
+
+      event = Event.last
+      event.local_time.strftime('%FT%R').should ==
+            Time.parse(attrs[:start_time]).strftime('%FT%R')
     end
   end
 
@@ -72,7 +82,6 @@ describe 'Create and edit Features', type: :feature do
         event = Event.last
 
         event.user.name.should == user_name
-        event.start_time.to_i.should == attrs[:start_time].to_i
       end
     end
   end

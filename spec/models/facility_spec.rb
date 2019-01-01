@@ -49,11 +49,24 @@ describe Facility, type: :model do
 
   describe 'Validations' do
     it{ should validate_presence_of :name }
+    it{ should validate_presence_of :address }
   end
 
   describe 'Attributes' do
     specify ':active should default to true' do
       @facility.active.should == true
     end
-  end
+
+    describe 'Delegates' do
+      specify ':timezone should return address.timezone' do
+        @facility.timezone.should == @facility.address.timezone
+      end
+    end
+  end # Attributes
+
+  describe 'Idioms' do
+    # it 'should create an address when it is initiated' do
+    #   Facility.new.address.class.should == Address
+    # end
+  end # Idioms
 end

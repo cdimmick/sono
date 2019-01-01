@@ -28,7 +28,9 @@
     <div class="col-sm-4">
       <div class="form-group">
         <%= form.label :start_time %>
-        <%= form.datetime_field :start_time, class: 'form-control' %>
+        <% start_time = event.facility && event.start_time ? event.local_time.strftime('%FT%T') : nil %>
+        <%= form.datetime_field :start_time, class: 'form-control',
+                                value: start_time %>
       </div>
     </div>
 
@@ -37,7 +39,7 @@
         <% if local_assigns[:users] %>
           <%= form.label :user_id %>
           <%= form.select :user_id, users.map{ |u| [u.name, u.id]},
-                          {include_blank: true}, class: 'form-control' %>
+                          {}, class: 'form-control' %>
         <% end %>
 
         <% if user_is?('user') && event.new_record? %>

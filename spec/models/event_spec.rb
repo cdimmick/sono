@@ -3,6 +3,7 @@ require 'rails_helper'
 describe Event, type: :model do
   before do
     @event = build(:event)
+    @facility = @event.facility
   end
 
   describe 'Associations' do
@@ -49,5 +50,30 @@ describe Event, type: :model do
         @event.contact.should == @facility_admin
       end
     end
-  end
+
+    describe '#local_time' do
+      it "should return time as local to the Facility's timezone" do
+        @event.update(start_time: '2000-12-12T9:00')
+        @event.local_time.strftime('%FT%T%z').should == '2000-12-12T09:00:00-0800'
+      end
+    end
+  end # Methods
+
+  describe 'Idioms' do
+    describe 'Download Token' do
+      it 'Should create a random download_token on create' do
+        @event.download_token.should == nil
+        @event.save!
+        @event.download_token.length.should == 20
+      end
+    end
+
+    describe 'Saving Start Time' do
+      it 'should save start_time in timezone of @event.facility' do
+        @event.update(start_time: '2018-12-12T13:00')
+        @event.start_time.in_time_zone(@event.facility.timezone)
+              .strftime('%FT%T%z').should == '2018-12-12T13:00:00-0800'
+      end
+    end
+  end # Idioms
 end

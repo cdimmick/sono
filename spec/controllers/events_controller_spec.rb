@@ -6,7 +6,23 @@ describe EventsController, type: :controller do
     @super_admin = create(:super_admin)
     @admin = create(:admin)
     @event = create(:event, admin_id: @admin.id, user_id: @user.id)
+    @facility = @event.facility
+    @facility.address = create(:address)
+    @facility.save!
   end
+
+  describe 'GET /events/download/:token' do
+    specify 'If token matches @event.download_token, allow download' do
+      pending 'Not sure how download will be provided'
+      true.should == false
+    end
+
+    specify 'If token DOES NOT match @event.download_token, redirect' do
+      get :download, params: {id: @event.id, token: 'x'}
+      expect(response).to redirect_to root_path
+      flash[:alert].should == 'You are not allowed to view that resource.'
+    end
+  end # Download
 
   describe 'POST /events/:id/invite' do
     before do
@@ -33,7 +49,7 @@ describe EventsController, type: :controller do
         @event.update(user_id: create(:user).id)
         post :invite, params: {id: @event.id, emails: @emails}
         expect(response).to redirect_to root_path
-        flash[:alert].should == 'You must be an Admin to view that resource.'
+        flash[:alert].should == 'Only the Event User may view this resource.'
       end
     end
 
@@ -45,7 +61,7 @@ describe EventsController, type: :controller do
       specify 'Only user can access' do
         post :invite, params: {id: @event.id, emails: @emails}
         expect(response).to redirect_to(root_path)
-        flash[:alert].should == 'You must be an Admin to view that resource.'
+        flash[:alert].should == 'Only the Event User may view this resource.'
       end
     end
   end # Invite
@@ -356,7 +372,8 @@ describe EventsController, type: :controller do
 
         event = assigns[:event]
 
-        event.start_time.to_i.should == @event_params[:event][:start_time].to_i
+        event.local_time.strftime('%FT%R').should ==
+              Time.parse(@event_params[:event][:start_time]).strftime('%FT%R')
         event.user = @user
       end
 
@@ -407,7 +424,8 @@ describe EventsController, type: :controller do
 
         event = Event.last
 
-        event.start_time.to_i.should == @event_params[:event][:start_time].to_i
+        event.local_time.strftime('%FT%R').should ==
+              Time.parse(@event_params[:event][:start_time]).strftime('%FT%R')
         event.user = @user
         event.admin = @admin
       end
@@ -464,9 +482,6 @@ describe EventsController, type: :controller do
                 .to change{ Event.count }.by(1)
 
           event = Event.last
-
-          event.start_time.in_time_zone('Alaska').strftime('%D%r').should ==
-               @event_params[:event][:start_time].in_time_zone('Alaska').strftime('%D%r')
           event.user = @user
           event.admin = @super_admin
         end
@@ -528,11 +543,12 @@ describe EventsController, type: :controller do
       end
 
       it 'should update @event' do
-        @time = @event.start_time
+        @time = @event.local_time
 
         expect{ put :update, params: @event_params }
-              .to change{ @event.reload.start_time.to_i }
-              .from(@time.to_i).to(@event_params[:event][:start_time].to_i)
+              .to change{ @event.reload.local_time.strftime('%FT%T') }
+              .from(@time.strftime('%FT%T'))
+              .to(@event_params[:event][:start_time].strftime('%FT%T'))
       end
 
       context 'Success' do
@@ -578,11 +594,12 @@ describe EventsController, type: :controller do
       end
 
       it 'should update @event' do
-        @time = @event.start_time
+        @time = @event.local_time
 
         expect{ put :update, params: @event_params }
-              .to change{ @event.reload.start_time.to_i }
-              .from(@time.to_i).to(@event_params[:event][:start_time].to_i)
+              .to change{ @event.reload.local_time.strftime('%FT%T') }
+              .from(@time.strftime('%FT%T'))
+              .to(@event_params[:event][:start_time].strftime('%FT%T'))
       end
 
       context 'Success' do
@@ -594,8 +611,8 @@ describe EventsController, type: :controller do
           assigns[:event].should == @event
         end
 
-        it 'should redirect to /events' do
-          expect(response).to redirect_to(events_path)
+        it 'should redirect to /event/:id' do
+          expect(response).to redirect_to(event_path(assigns[:event]))
           flash[:notice].should == 'Event was updated.'
         end
 
