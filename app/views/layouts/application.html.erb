@@ -12,7 +12,19 @@
   <body>
     <%= render partial: 'parts/main_nav' %>
     <%= render partial: 'parts/flash' %>
-    <%= yield %>
+    <div id="main_content">
+      <%= yield %>
+    </div>
     <%= render partial: 'parts/footer' %>
   </body>
 </html>
+
+<script>
+  $(document).on('turbolinks:load', function(){
+    pushDownFooter();
+
+    $(screen).resize(function(){
+      pushDownFooter();
+    });
+  });
+</script>
