@@ -29,8 +29,8 @@ class ChargesController < ApplicationController
         stripe_id: charge[:id]
       )
 
-      GuestsMailer.new_charge(@charge.id).deliver_later
-      UsersMailer.new_charge(@charge.id).deliver_later
+      GuestsMailer.new_charge(@charge.id).deliver_now
+      UsersMailer.new_charge(@charge.id).deliver_now
 
       render json: {message: 'Thank you for your purchase.'}
     rescue Stripe::CardError => card_error

@@ -27,7 +27,7 @@ class SignUpsController < ApplicationController
     event_save = @event.save
 
     if user_save && event_save
-      UsersMailer.new_event(@event.id).deliver_later
+      UsersMailer.new_event(@event.id).deliver_now
       sign_in(:user, @user)
       redirect_to root_path, notice: 'Your acocunt has been created. Thank you.'
     else
