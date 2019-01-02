@@ -40,7 +40,7 @@ describe 'User Registration Features', type: :feature do
     end
   end
 
-  it 'Should save facility param passed as param :facility' do
+  it 'Should save facility passed as param to :facilities' do
     user_sign_up_min
     click_button 'Sign up'
     User.last.facilities.last.should == @facility

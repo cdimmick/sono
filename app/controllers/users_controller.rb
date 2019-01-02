@@ -39,20 +39,24 @@ class UsersController < ApplicationController
     new_user = true
 
     if user_params[:role] == 'user'
+      # Because User can have multiple Facilities, one Facility may think they
+      # are signing a User up, but the User already exists, so UPDATE User.
       @user = User.find_or_create_by(email: user_params[:email])
+      @user.assign_attributes(user_params)
       new_user = @user.new_record?
-      user_params.each{ |k, v| @user.send("#{k}=", v) }
     else
       @user = User.new(user_params)
     end
 
     return unless user_can_set_role?
 
-    password = random_password
-    @user.password = password if new_user
-
     @user.facilities << @facility if @user.role == 'user'
     @user.facility = @facility if @user.role == 'admin'
+
+    if new_user
+      password = random_password
+      @user.password = password
+    end
 
     if @user.save
       UsersMailer.new_user(@user.id, password).deliver_later if new_user

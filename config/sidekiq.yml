@@ -1,5 +1,11 @@
 ---
-:concurrency: 1
+:concurrency: 5
+
+:timeout: 8
+
 :queues:
   - default
   - mailers
+
+production:
+  :concurrency: 3
