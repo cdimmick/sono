@@ -1,5 +1,5 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: 'todo@change_me.com'
+  default from: ENV.fetch('OUTGOING_EMAIL_ADDRESS')
   layout 'mailer'
 
   add_template_helper(ApplicationHelper)
