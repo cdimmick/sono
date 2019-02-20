@@ -13,7 +13,7 @@
   </thead>
 
   <tbody>
-    <% user.events.sort_by{ |e| e.start_time }.each do |event| %>
+    <% user.events.order(start_time: :desc).each do |event| %>
       <% event.reload %>
       <% facility = event.facility %>
       <% address = facility.address %>

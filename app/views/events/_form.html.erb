@@ -29,8 +29,19 @@
       <div class="form-group">
         <%= form.label :start_time %>
         <% start_time = event.facility && event.start_time ? event.local_time.strftime('%FT%T') : nil %>
-        <%= form.datetime_field :start_time, class: 'form-control',
+        <%#= form.datetime_field :start_time, class: 'form-control',
                                 value: start_time %>
+        <%= form.text_field :start_time, class: 'form-control' %>
+
+        <script>
+          $(document).on('turbolinks:load', function(){
+
+            $('#event_start_time  ').flatpickr({
+              enableTime: true,
+              dateFormat: "Y-m-d H:i",
+            });
+          });
+        </script>
       </div>
     </div>
 

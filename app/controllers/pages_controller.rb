@@ -8,7 +8,7 @@ class PagesController < ApplicationController
     when 'super_admin'
       redirect_to facilities_path
     else
-      redirect_to home_path
+      redirect_to new_user_session_path
     end
   end
 

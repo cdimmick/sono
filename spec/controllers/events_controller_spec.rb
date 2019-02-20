@@ -93,7 +93,11 @@ describe EventsController, type: :controller do
         other_facility_event = create(:event)
 
         get :index
-        assigns(:events).should == [@event, event2]
+
+        events = assigns(:events)
+        events.count.should == 2
+        events.include?(@event).should == true
+        events.include?(event2).should == true
       end
 
       it 'should assign current_user facility to @facility' do
@@ -139,7 +143,11 @@ describe EventsController, type: :controller do
           other_facility_event = create(:event)
 
           get :index
-          assigns(:events).should == [@event, event2]
+
+          events = assigns(:events)
+          events.count.should == 2
+          events.include?(@event).should == true
+          events.include?(event2).should == true
         end
 
         it 'should assign current_user facility to @facility' do

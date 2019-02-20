@@ -17,7 +17,7 @@
 //= require turbolinks
 //= require underscore
 //= require backbone
-//= require backbone_shared 
+//= require backbone_shared
 
 //= require facilities/facilities
 //= require_tree ../templates
@@ -37,13 +37,13 @@
 //--- Globals -------------------------------------------------------------
 function pushDownFooter(){
   // Used in layouts/application
-  let footer = $('#footer');
-  let screen_height = screen.height;
-  let footer_height = $(footer).height();
-  let footer_top = $(footer).offset().top;
-  if(footer_top > screen_height){ return; }
-  let offset = screen_height - footer_top - 175 - footer_height;
-  $('#main_content').css('margin-bottom', offset + 'px');
+  // let footer = $('#footer');
+  // let screen_height = screen.height;
+  // let footer_height = $(footer).height();
+  // let footer_top = $(footer).offset().top;
+  // if(footer_top > screen_height){ return; }
+  // let offset = screen_height - footer_top - 175 - footer_height;
+  // $('#main_content').css('margin-bottom', offset + 'px');
 }
 
 //--- Utilities --------------------------------------------------------------

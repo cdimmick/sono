@@ -9,7 +9,7 @@ describe PagesController, type: :controller do
 
   describe 'Get /pages/router' do
     specify 'Guests should redirect_to home' do
-      expect(get :router).to redirect_to(home_path)
+      expect(get :router).to redirect_to(new_user_session_path)
     end
 
     specify 'Users should' do

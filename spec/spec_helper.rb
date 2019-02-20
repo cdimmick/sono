@@ -23,9 +23,12 @@ RSpec.configure do |config|
     c.syntax = [:should, :expect]
   end
 
+  config.filter_run :focus => true
+  config.run_all_when_everything_filtered = true
+
   config.before(:suite) do
     Timezone::Lookup.config(:test)
-    Timezone::Lookup.lookup.stub(40.7143528, -74.0059731, 'America/Los_Angeles')
+    Timezone::Lookup.lookup.stub(40.7143528, -74.0059731, "US/Pacific")
     # %x[bundle exec rake assets:precompile]
   end
 
