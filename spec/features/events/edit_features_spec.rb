@@ -16,7 +16,8 @@ describe 'Edit features', type: :feature do
 
     it 'should show local_time as start_time' do
       visit "/events/#{@event.to_param}/edit"
-      find('#event_start_time').value.should == @event.local_time.strftime('%FT%T')
+      time_in_view = Time.parse(find('#event_start_time').value).strftime('%FT')
+      time_in_view.should == @event.local_time.strftime('%FT')
     end
 
     it 'should all User to update record' do

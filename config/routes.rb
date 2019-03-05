@@ -1,8 +1,6 @@
 Rails.application.routes.draw do
-  # get 'home', to: 'pages#home', as: 'home'
   get 'router', to: 'pages#router', as: 'router'
 
-  # root to: 'pages#home'
   root to: 'pages#router'
 
   resources :facilities

@@ -8,7 +8,7 @@ class Event < ApplicationRecord
   validates :start_time, presence: true
 
   def stream_token
-    "#{id}-#{created_at.to_i}"
+    id
   end
 
 
@@ -18,6 +18,10 @@ class Event < ApplicationRecord
 
   def contact
     admin || facility.admins.active.first
+  end
+
+  def stream_url
+    "#{ENV.fetch('WOWZA_STREAM_BASE_URL')}/#{self.stream_token}/playlist.m3u8"
   end
 
   before_validation :set_facility

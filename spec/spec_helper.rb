@@ -7,8 +7,6 @@ require 'shoulda'
 require 'devise'
 require 'timezone'
 
-
-
 Capybara.javascript_driver = :poltergeist
 
 VCR.configure do |config|
