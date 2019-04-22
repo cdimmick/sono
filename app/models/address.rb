@@ -16,6 +16,8 @@ class Address < ApplicationRecord
             "VA"=>"Virginia", "WA"=>"Washington", "WV"=>"West Virginia",
             "WI"=>"Wisconsin", "WY"=>"Wyoming"}
 
+
+
   belongs_to :has_address, polymorphic: true, optional: true
 
   validates :street, presence: true
@@ -29,6 +31,15 @@ class Address < ApplicationRecord
 
   after_validation :geocode
   after_validation :set_timezone
+  after_validation :validate_timezone
+
+  def Address.timezones
+    Timezone.names
+  end
+
+  def Address.states
+    STATES
+  end
 
   def full_state
     STATES[state]
@@ -48,7 +59,16 @@ class Address < ApplicationRecord
   private
 
   def set_timezone
-    return if errors.count > 0
+    return if errors.count > 0 # If there are errors, skip this step.
+    return unless timezone.blank? # If set by any method, do not geoclocate.
     self.timezone = Timezone.lookup(latitude, longitude).name
+  end
+
+  def validate_timezone
+    # Check after timezone has been provided, so after other validations
+    errors.add(:timezone, "can't be blank") if timezone.blank?
+
+
+    errors.add(:timezone, 'is not included in the list') unless Address.timezones.include?(timezone)
   end
 end

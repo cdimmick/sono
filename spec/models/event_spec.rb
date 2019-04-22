@@ -53,6 +53,7 @@ describe Event, type: :model do
 
     describe '#local_time' do
       it "should return time as local to the Facility's timezone" do
+        @event.facility.address.update(timezone: 'America/Los_Angeles')
         @event.update(start_time: '2000-12-12T9:00')
         @event.local_time.strftime('%FT%T%z').should == '2000-12-12T09:00:00-0800'
       end
@@ -70,6 +71,7 @@ describe Event, type: :model do
 
     describe 'Saving Start Time' do
       it 'should save start_time in timezone of @event.facility' do
+        @event.facility.address.update(timezone: 'America/Los_Angeles')
         @event.update(start_time: '2018-12-12T13:00')
         @event.start_time.in_time_zone(@event.facility.timezone)
               .strftime('%FT%T%z').should == '2018-12-12T13:00:00-0800'

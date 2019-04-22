@@ -34,12 +34,24 @@
 //= require events
 //= require_tree .
 
+//--- Globals -------------------------------------------------------------
+function pushDownFooter(){
+  // Used in layouts/application
+  // let footer = $('#footer');
+  // let screen_height = screen.height;
+  // let footer_height = $(footer).height();
+  // let footer_top = $(footer).offset().top;
+  // if(footer_top > screen_height){ return; }
+  // let offset = screen_height - footer_top - 175 - footer_height;
+  // $('#main_content').css('margin-bottom', offset + 'px');
+}
+
+//--- Utilities --------------------------------------------------------------
 function c(val){
   console.log('-----------------------------');
   console.log(val);
   console.log('-----------------------------');
 }
-
 
 function titleCase(str) {
   str = str.toLowerCase().split(' ');

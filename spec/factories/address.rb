@@ -4,6 +4,7 @@ FactoryBot.define do
     city { Faker::Address.city }
     state { Address::STATES.keys.sample }
     zip{ Faker::Address.zip_code }
+    timezone{ Address.timezones.sample }
 
     factory :complete_address do
       street2 { Faker::Address.street_address }
@@ -12,3 +13,4 @@ FactoryBot.define do
     end
   end
 end
+   

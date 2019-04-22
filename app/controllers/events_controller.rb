@@ -10,7 +10,7 @@ class EventsController < ApplicationController
   def download
     if @event.download_token == params[:token]
       #TODO
-    else 
+    else
       redirect_to root_path, alert: 'You are not allowed to view that resource.'
     end
   end
@@ -129,7 +129,8 @@ class EventsController < ApplicationController
 
   def event_params
     params.require(:event).permit(
-      :user_id, :facility_id, :admin_id, :start_time, :password
+      :user_id, :facility_id, :admin_id, :start_time, :password,
+      user_attributes: [:name, :email, :phone, :password]
     )
   end
 

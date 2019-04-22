@@ -164,9 +164,7 @@ describe FacilitiesController, type: :controller do
       end
 
       it 'should accept address attributes' do
-        facility_params = @facility_params
-
-        expect{ post :create, params: facility_params }
+        expect{ post :create, params: @facility_params }
               .to change { Address.count }.by(1)
       end
     end

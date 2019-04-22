@@ -19,6 +19,8 @@ Bundler.require(*Rails.groups)
 
 module Sono
   class Application < Rails::Application
+    config.active_job.queue_adapter = :sidekiq
+    
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.2
 

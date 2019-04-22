@@ -16,10 +16,11 @@ describe 'Edit features', type: :feature do
 
     it 'should show local_time as start_time' do
       visit "/events/#{@event.to_param}/edit"
-      find('#event_start_time').value.should == @event.local_time.strftime('%FT%T')
+      time_in_view = Time.parse(find('#event_start_time').value).strftime('%FT')
+      time_in_view.should == @event.local_time.strftime('%FT')
     end
 
-    it 'should all User to update record' do
+    it 'should allow User to update record' do
       time_string = '2000-01-01T20:00'
       visit "/events/#{@event.to_param}/edit"
       fill_in 'event_start_time', with: time_string
@@ -29,5 +30,17 @@ describe 'Edit features', type: :feature do
   end
 
   context 'As Admin' do
+    before do
+      login @admin
+    end
+
+    it 'should not show New User fields' do
+      visit "/events/#{@event.to_param}/edit"
+      page.has_css?('#new_user_fields').should == false
+    end
+
+    it 'write some' do
+      true.should == false
+    end
   end
 end

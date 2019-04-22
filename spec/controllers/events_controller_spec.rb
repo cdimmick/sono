@@ -93,7 +93,11 @@ describe EventsController, type: :controller do
         other_facility_event = create(:event)
 
         get :index
-        assigns(:events).should == [@event, event2]
+
+        events = assigns(:events)
+        events.count.should == 2
+        events.include?(@event).should == true
+        events.include?(event2).should == true
       end
 
       it 'should assign current_user facility to @facility' do
@@ -139,7 +143,11 @@ describe EventsController, type: :controller do
           other_facility_event = create(:event)
 
           get :index
-          assigns(:events).should == [@event, event2]
+
+          events = assigns(:events)
+          events.count.should == 2
+          events.include?(@event).should == true
+          events.include?(event2).should == true
         end
 
         it 'should assign current_user facility to @facility' do
@@ -397,6 +405,21 @@ describe EventsController, type: :controller do
       it 'should send an email to Facility' do
         post :create, params: @event_params
         expect(FacilitiesMailer).to have_received(:new_event).with(assigns[:event].id)
+      end
+
+      describe 'Adding a New User' do
+        before do
+          @user_params = attributes_for(:user)
+          @event_params[:event][:user_attributes] = @user_params
+          @event_params[:event][:user_id] = nil
+        end
+
+        it 'should create a new User' do
+          expect{ post :create, params: @event_params }.to change{ User.count }.by(1)
+          user = User.last
+          user.name.should == @user_params[:name]
+          user.email.should == @user_params[:email]
+        end
       end
 
       context 'Failure' do

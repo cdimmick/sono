@@ -66,7 +66,7 @@ class FacilitiesController < ApplicationController
     params.require(:facility).permit(
       :name, :phone,
       address_attributes: [
-        :street, :street2, :street3, :number, :city, :state, :zip
+        :street, :street2, :street3, :number, :city, :state, :zip, :timezone
       ]
     )
   end

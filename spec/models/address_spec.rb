@@ -15,6 +15,8 @@ describe Address, type: :model do
     it{ should validate_presence_of :city }
     it{ should validate_presence_of :state }
     it{ should validate_presence_of :zip }
+    it{ should validate_presence_of :timezone }
+    it { should validate_inclusion_of(:timezone).in_array(Address.timezones) }
   end
 
   describe 'Idioms' do
@@ -28,8 +30,17 @@ describe Address, type: :model do
 
       it 'should save :timezone when saved' do
         # testing info: https://github.com/panthomakos/timezone
+        @address.timezone = nil
+
+        puts @address.inspect
+
         expect{ @address.save! }.to change{ @address.timezone }
-              .from(nil).to('America/Los_Angeles')
+              .from(nil).to('US/Pacific')
+      end
+
+      it 'should not update :timezone if Timezone has been set' do
+        @address.update(timezone: 'US/Pacific')
+        expect{ @address.save! }.not_to change{ @address.timezone }
       end
     end
   end

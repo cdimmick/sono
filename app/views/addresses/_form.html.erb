@@ -13,21 +13,20 @@
     </div>
   </div>
 
-  <div class="col-sm-4"></div>
-</div>
-
-<div class="row">
   <div class="col-sm-4">
     <div class="form-group">
       <%= f.label :city %>
       <%= f.text_field :city, class: 'form-control' %>
     </div>
   </div>
+</div>
 
+<div class="row">
   <div class="col-sm-4">
     <div class="form-group">
       <%= f.label :state %>
-      <%= f.select :state, states_for_select(f.object.state), {}, class: 'form-control' %>
+      <%= f.select :state, states_for_select(f.object.state),
+                   {}, class: 'form-control' %>
     </div>
   </div>
 
@@ -35,6 +34,14 @@
     <div class="form-group">
       <%= f.label :zip %>
       <%= f.text_field :zip, class: 'form-control' %>
+    </div>
+  </div>
+
+  <div class="col-sm-4">
+    <div class="form-group">
+      <%= f.label :timezone %>
+      <%= f.select :timezone, Address.timezones.select{ |n| n =~ /^US\// },
+                   {include_blank: true}, class: 'form-control' %>
     </div>
   </div>
 </div>

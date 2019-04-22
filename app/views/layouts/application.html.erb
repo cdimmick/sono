@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Sono</title>
+    <title><%= t 'app.name' %></title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
-  </head>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+  <%= wowza_player_script_tag %>
+</head>
 
   <body>
     <%= render partial: 'parts/main_nav' %>
     <%= render partial: 'parts/flash' %>
-    <%= yield %>
-    <%= render partial: 'parts/footer' %>
+    <div id="main_content">
+      <%= yield %>
+    </div>
+    <%#= render partial: 'parts/footer' %>
   </body>
 </html>
