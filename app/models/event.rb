@@ -1,5 +1,7 @@
 class Event < ApplicationRecord
   belongs_to :user
+  accepts_nested_attributes_for :user
+
   belongs_to :admin, class_name: 'User', optional: true
   belongs_to :facility
 

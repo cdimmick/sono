@@ -3,11 +3,10 @@
     <% month_group.group_by{ |e| e.start_time.strftime('%e') }.each do |day, day_group| %>
       <tr class="header_row">
         <td colspan="5">
-          <h3>
+          <h5>
             <%= month %>
             <small><%= day %></small>
-          </h3>
-
+          </h5>
         </td>
       </tr>
 
@@ -19,8 +18,8 @@
           </td>
           <td class="name"><%= user.name %></td>
           <td>
-            <input type="text" value="<%= event.stream_token %>"
-                    class="stream_token click_to_copy" />
+            <input type="text" value="Token: <%= event.stream_token %>"
+                    class="stream_token click_to_copy btn btn-default" />
           </td>
           <td>
             <%= link_to 'View', event, class: 'btn btn-primary btn-sm' %>

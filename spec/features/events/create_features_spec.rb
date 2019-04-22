@@ -13,6 +13,10 @@ describe 'Create Features', type: :feature do
       login @user
     end
 
+    it 'should not show New User fields' do
+      true.should == false
+    end
+
     it 'should create a user' do
       visit "/users/#{@user.id}"
 
@@ -83,6 +87,10 @@ describe 'Create Features', type: :feature do
 
         event.user.name.should == user_name
       end
+    end
+
+    describe 'Creating an Event and a new User' do
+      true.should == false
     end
   end
 end

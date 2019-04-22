@@ -29,14 +29,12 @@
       <div class="form-group">
         <%= form.label :start_time %>
         <% start_time = event.facility && event.start_time ? event.local_time.strftime('%FT%T') : nil %>
-        <%#= form.datetime_field :start_time, class: 'form-control',
-                                value: start_time %>
         <%= form.text_field :start_time, class: 'form-control' %>
 
         <script>
           $(document).on('turbolinks:load', function(){
 
-            $('#event_start_time  ').flatpickr({
+            $('#event_start_time').flatpickr({
               enableTime: true,
               dateFormat: "Y-m-d H:i",
             });
@@ -50,7 +48,7 @@
         <% if local_assigns[:users] %>
           <%= form.label :user_id %>
           <%= form.select :user_id, users.map{ |u| [u.name, u.id]},
-                          {}, class: 'form-control' %>
+                          {include_blank: true}, class: 'form-control' %>
         <% end %>
 
         <% if user_is?('user') && event.new_record? %>
@@ -74,6 +72,37 @@
     </div>
   </div>
 
+  <% if @event.new_record? %>
+    <%# This is very similar to users/_form, and maybe worth drying up %>
+    <div id="new_user_fields">
+      <h4>New User</h4>
+      <%= form.fields_for :user, User.new do |user_fields| %>
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <%= user_fields.label :name %>
+              <%= user_fields.text_field :name, class: 'form-control' %>
+            </div>
+          </div>
+
+          <div class="col-sm-4">
+            <div class="form-group">
+              <%= user_fields.label :email %>
+              <%= user_fields.email_field :email, class: 'form-control' %>
+            </div>
+          </div>
+
+          <div class="col-sm-4">
+            <div class="form-group">
+              <%= user_fields.label :phone %>
+              <%= user_fields.phone_field :phone, class: 'form-control' %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
   <div class="row">
     <div class="col-sm-12">
       <div class="form-group">
@@ -82,3 +111,11 @@
     </div>
   </div>
 <% end %>
+
+<script>
+  // #TODO -jf Spec
+  $(document).on('turbolinks:load', function(){
+    let form = new NewEventForm;
+    form.init();
+  });
+</script>
