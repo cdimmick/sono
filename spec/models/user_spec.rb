@@ -28,9 +28,9 @@ describe User, type: :model do
     it{ should validate_presence_of :name }
 
     specify 'Admin must have an associated Facility' do
-      @admin.update(facility_id: nil)
-      @admin.valid?.should == false
-      @admin.errors[:facility].include?('cannot be blank').should == true
+      admin = build(:admin, facility_id: nil)
+      admin.valid?.should == false
+      admin.errors[:facility].include?('cannot be blank').should == true
     end
   end
 
@@ -95,7 +95,7 @@ describe User, type: :model do
               .to change{ @user.facilities.include?(@facility) }
               .from(false).to(true)
       end
-      # 
+      #
       # it 'should accept a nil value and ignore it' do
       #   @user.facility_to_add=(nil).should == nil
       # end

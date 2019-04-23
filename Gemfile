@@ -42,7 +42,7 @@ gem 'timezone', '~> 1.0'
 gem 'stripe'
 
 gem 'wowza_player', git: 'git@github.com:WowzaMediaSystems/wowza-player-rails.git'
-gem 'wowza'
+# gem 'wowza'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -65,7 +65,7 @@ group :test do
   # gem 'chromedriver-helper'
   gem 'capybara'
   gem 'factory_bot_rails'
-  gem 'poltergeist'
+  # gem 'poltergeist'
   gem 'rspec-rails'
   gem 'database_cleaner'
   gem 'shoulda'

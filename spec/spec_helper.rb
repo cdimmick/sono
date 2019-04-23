@@ -1,13 +1,18 @@
 # require 'capybara/rails'
 require 'capybara/rspec'
-require 'capybara/poltergeist'
+# require 'capybara/poltergeist'
 require 'factory_bot_rails'
 require 'vcr'
 require 'shoulda'
 require 'devise'
 require 'timezone'
 
-Capybara.javascript_driver = :poltergeist
+# Capybara.register_driver :selenium do |app|
+#   Capybara::Selenium::Driver.new(app, browser: :chrome)
+# end
+
+Capybara.javascript_driver = :selenium_headless
+# Capybara.javascript_driver = :selenium
 
 VCR.configure do |config|
   config.cassette_library_dir = "spec/fixtures/vcr_cassettes"

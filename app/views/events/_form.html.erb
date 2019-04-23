@@ -72,7 +72,7 @@
     </div>
   </div>
 
-  <% if @event.new_record? %>
+  <% if @event.new_record? && user_can?('admin') %>
     <%# This is very similar to users/_form, and maybe worth drying up %>
     <div id="new_user_fields">
       <h4>New User</h4>

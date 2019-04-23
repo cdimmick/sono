@@ -22,7 +22,7 @@ class EventsController < ApplicationController
     end
 
     params[:emails].split(/, ?/).each do |email|
-      GuestsMailer.invite(@event.id, email).deliver_now
+      GuestsMailer.invite(@event.id, email).deliver_later
     end
 
     redirect_to @event, notice: "#{params[:emails]} will be invited right away."
@@ -68,12 +68,23 @@ class EventsController < ApplicationController
   end
 
   def create
+    if event_params[:user_attributes] && event_params[:user_id].blank?
+      # So if this Event is created with a NEW User.
+      # This will assign a random_password even if a password is passed with the params.
+      password = random_password
+      params[:event][:user_attributes][:password] = random_password
+      @new_user = true
+    end
+
     @event = Event.new(event_params)
 
     respond_to do |format|
       if @event.save
-        UsersMailer.new_event(@event.id).deliver_now
-        FacilitiesMailer.new_event(@event.id).deliver_now unless user_is?('admin')
+        UsersMailer.new_event(@event.id).deliver_later
+        FacilitiesMailer.new_event(@event.id).deliver_later unless user_is?('admin')
+        UsersMailer.new_user(@event.user.id, password).deliver_later if @new_user
+
+
         format.html { redirect_to @event, notice: 'Event was successfully created.' }
       else
         format.html do
@@ -96,8 +107,8 @@ class EventsController < ApplicationController
           if user_is?('user') && @event.user != current_user
             redirect_to root_path, alert: 'You must be an Admin to view that resource.'
           else
-            UsersMailer.changed_event(@event.id).deliver_now
-            FacilitiesMailer.changed_event(@event.id).deliver_now
+            UsersMailer.changed_event(@event.id).deliver_later
+            FacilitiesMailer.changed_event(@event.id).deliver_later
 
             redirect_path = user_is?('user') ? user_path(@event.user) : event_path(@event)
             redirect_to redirect_path, notice: 'Event was updated.'

@@ -65,3 +65,66 @@ function NewEventForm(){
     this.initializeNewUserFields();
   }
 }
+
+
+function StreamPlayer(){
+  this.$el = $('#player');
+  this.$coming_soon = $('#coming_soon');
+
+  this.getPlayer = function(){
+    return new Promise(function(resolve, reject){
+      let interval_id = window.setInterval(() => {
+        if($wp.get('wowza_player')){
+          resolve();
+          window.clearInterval(interval_id);
+        }
+      }, 1000);
+    });
+  }
+
+  this.isLive = function(){
+    return $wp.get('wowza_player').isLive();
+  }
+
+  this.play = function(){
+    return $wp.get('wowza_player').play();
+  }
+
+  this.log = function(message){
+    console.log('--- StreamPlayer: ' + message + ' ---');
+  }
+
+  this.hide = function(){
+    this.$el.hide();
+    this.$coming_soon.show();
+  }
+
+  this.show = function(){
+    this.$el.show();
+    this.$coming_soon.hide();
+  }
+
+  this.init = function(){
+    this.log('Initializing..');
+    this.hide();
+    this.is_playing = false;
+
+    this.getPlayer().then(() => {
+      let interval_id = window.setInterval(() => {
+        if(this.isLive()){
+          // if(!this.is_playing){
+            this.log('Wowza Stream is Live.');
+            this.show();
+            this.is_playing = true;
+            window.clearInterval(interval_id);
+          // }
+        } else {
+          this.log('Wowza Stream is NOT Live, checking again in 5 seconds..');
+          this.hide();
+          this.is_playing = false;
+          this.play();
+        }
+      }, 1000);
+    });
+  }
+}

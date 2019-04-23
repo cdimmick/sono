@@ -4,6 +4,8 @@ describe 'Edit features', type: :feature do
   before do
     @admin = create(:admin)
     @facility = @admin.facility
+    # Set this Facility as this SuperAdmin's "acting_as"
+    @super_admin = create(:super_admin, facility_id: @facility.to_param)
     @user = create(:user)
     @user.facilities << @facility
     @event = create(:event, admin_id: @admin.id, user_id: @user.id)
@@ -39,8 +41,27 @@ describe 'Edit features', type: :feature do
       page.has_css?('#new_user_fields').should == false
     end
 
-    it 'write some' do
-      true.should == false
+    it 'should allow Admin to update record' do
+      time_string = '2000-01-01T20:00'
+      visit "/events/#{@event.to_param}/edit"
+      fill_in 'event_start_time', with: time_string
+      click_button 'Update Event'
+      @event.reload.local_time.strftime('%FT%R').should == time_string
+    end
+  end # Admin
+
+  context 'As SuperAdmin' do
+    before do
+      login @super_admin
+    end
+
+    it 'should allow SuperAdmin to update record' do
+      time_string = '2000-01-01T20:00'
+      visit "/events/#{@event.to_param}/edit"
+
+      fill_in 'event_start_time', with: time_string
+      click_button 'Update Event'
+      @event.reload.local_time.strftime('%FT%R').should == time_string
     end
   end
 end

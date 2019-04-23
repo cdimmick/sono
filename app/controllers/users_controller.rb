@@ -59,7 +59,7 @@ class UsersController < ApplicationController
     end
 
     if @user.save
-      UsersMailer.new_user(@user.id, password).deliver_now if new_user
+      UsersMailer.new_user(@user.id, password).deliver_later if new_user
 
       notice = "#{@user.role.titlecase} has been created"
       if @user.role == 'user'
@@ -129,14 +129,5 @@ class UsersController < ApplicationController
     else
       true
     end
-  end
-
-  def random_password
-    chars = %w|a b c d e f g h i j k l m n o p q r s t u v w x y z
-               A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
-               1 2 3 4 5 6 7 8 9 0 @ $ % ^ & * ( )|
-    pw = ''
-    20.times{ pw += chars.sample }
-    pw
   end
 end

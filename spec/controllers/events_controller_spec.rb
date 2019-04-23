@@ -420,6 +420,17 @@ describe EventsController, type: :controller do
           user.name.should == @user_params[:name]
           user.email.should == @user_params[:email]
         end
+
+        it 'should add a new user, even if not password is supplied' do
+          @user_params[:password] = nil
+          expect{ post :create, params: @event_params }.to change{ User.count }.by(1)
+        end
+
+        it 'should send an email to the new User' do
+          allow(UsersMailer).to receive(:new_user).and_call_original
+          expect(UsersMailer).to receive(:new_user)
+          post :create, params: @event_params
+        end
       end
 
       context 'Failure' do

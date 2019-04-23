@@ -1,30 +1,38 @@
-<style>
-  #main_content{
-    background-color: #ddd;
-  }
-
-  #events{
-    padding-bottom: 100px;
-  }
-</style>
-
 <div id="events">
+  <% if user_can?('admin') || @event.user == current_user %>
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+            <div class="float-right" style="margin-bottom:20px;">
+              <%= link_to 'Edit', edit_event_path(@event), class: 'btn btn-primary' %>
+            </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
   <div class="container">
-    <div class="row">
-      <%= image_tag 'logos/mommy_access_live.png', class: 'header_image' %>
-      <div class="col-12">
-      </div>
-    </div>
+    <% if @event.user == current_user %>
+      <div class="container" id="invite">
+        <div class="row">
+          <div class="col-12">
+            <h3>
+              Invite People
+              <small>seperate with commas</small>
+            </h3>
 
-    <div class="row">
-      <div class="col-12">
-        <% if user_can?('admin') || @event.user == current_user %>
-          <div class="float-right" style="margin-bottom:20px;">
-            <%= link_to 'Edit', edit_event_path(@event), class: 'btn btn-primary' %>
+            <%= form_tag invite_event_path(@event) do %>
+              <div class="form-group">
+                <%= text_field_tag :emails, '', class: 'form-control', placeholder: 'List emails' %>
+              </div>
+
+              <div class="form-group float-right">
+                <%= submit_tag 'Submit', class: 'btn btn-primary' %>
+              </div>
+            <% end %>
           </div>
-        <% end %>
+        </div>
       </div>
-    </div>
+    <% end %>
 
     <div class="row">
       <div class="col-12">
@@ -35,53 +43,12 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-12">
-        <div id="stream">
-          <%= wowza_player_tag(
-                  license: ENV.fetch('WOWZA_KEY'),
-                  sourceURL: @event.stream_url,
-                  autoPlay: true,
-                  mute: true
-              )
-           %>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-12">
-        <div class="text-center" style="margin-top:20px;">
-          <% if @event.charges.count == 0 %>
-            <%= render partial: 'charges/form', locals: {event: @event} %>
-          <% else %>
-            <h2>A copy of this Stream has already been purchased.</h2>
-          <% end %>
-        </div>
-      </div>
-    </div>
+    <%= render partial: 'player' %>
   </div>
-
-  <% if @event.user == current_user %>
-    <div class="container" id="invite" style="margin-top:100px;">
-      <div class="row">
-        <div class="col-12">
-          <h3>
-            Invite People
-            <small>seperate with commas</small>
-          </h3>
-
-          <%= form_tag invite_event_path(@event) do %>
-            <div class="form-group">
-              <%= text_field_tag :emails, '', class: 'form-control', placeholder: 'List emails' %>
-            </div>
-
-            <div class="form-group float-right">
-              <%= submit_tag 'Submit', class: 'btn btn-primary' %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </div>
-  <% end %>
 </div>
+
+<script>
+  // $(document).on('turbolinks:load', function(){
+    // var stream_player = new StreamPlayer('<%= @event.to_param %>');
+  // });
+</script>

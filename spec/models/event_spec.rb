@@ -32,6 +32,7 @@ describe Event, type: :model do
         @facility_admin = create(:admin)
 
         @event.facility.admins << [@old_facility_admin, @facility_admin]
+        @event.save!
       end
 
       it 'should return admin, if one exists' do
@@ -45,8 +46,8 @@ describe Event, type: :model do
       end
 
       it "should return faciity's oldest active admin, if no admin exists" do
-        new_facilty_admin = create(:admin)
-        @event.facility.admins << new_facilty_admin
+        new_facility_admin = create(:admin)
+        @event.facility.admins << new_facility_admin
         @event.contact.should == @facility_admin
       end
     end

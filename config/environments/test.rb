@@ -1,6 +1,6 @@
 Rails.application.configure do
-  config.action_controller.asset_host = "file://#{::Rails.root}/public"
-  config.assets.prefix = 'assets_test'
+  # config.action_controller.asset_host = "file://#{::Rails.root}/public"
+  # config.assets.prefix = 'assets_test'
 
   # config.active_job.queue_adapter = :inline
 

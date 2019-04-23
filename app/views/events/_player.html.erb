@@ -1,0 +1,33 @@
+<div id="coming_soon">
+  <h1 style="text-align: center; margin-top: 100px;">Starting Soon...</h1>
+</div>
+<div id="player">
+  <div class="row">
+    <div class="col-12">
+        <%= wowza_player_tag(
+                license: ENV.fetch('WOWZA_KEY'),
+                sourceURL: @event.stream_url,
+                autoPlay: true,
+                mute: true) %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="text-center" style="margin-top:20px;">
+        <% if @event.charges.count == 0 %>
+          <%= render partial: 'charges/form', locals: {event: @event} %>
+        <% else %>
+          <h2>A copy of this Stream has already been purchased.</h2>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).on('turbolinks:load', function(){
+      var stream_player = new StreamPlayer;
+      stream_player.init();
+    });
+  </script>
+</div>
