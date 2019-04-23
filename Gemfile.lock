@@ -1,5 +1,5 @@
 GIT
-  remote: git@github.com:WowzaMediaSystems/wowza-player-rails.git
+  remote: https://github.com/jessethebuilder/wowza-player-rails
   revision: d20f369ab6afad579f4569b439e10b8d1654fbc1
   specs:
     wowza_player (0.3.0)
