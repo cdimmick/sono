@@ -9,10 +9,13 @@ class Event < ApplicationRecord
 
   validates :start_time, presence: true
 
+  def download_url
+    "http://www.sonostreamlive.net:1935/vod/mp4:sonostream_#{stream_token}.mp4/playlist.m3u8"
+  end
+
   def stream_token
     id
   end
-
 
   def local_time
     start_time.in_time_zone(facility.timezone)

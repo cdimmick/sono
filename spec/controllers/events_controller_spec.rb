@@ -13,8 +13,11 @@ describe EventsController, type: :controller do
 
   describe 'GET /events/download/:token' do
     specify 'If token matches @event.download_token, allow download' do
-      pending 'Not sure how download will be provided'
-      true.should == false
+      token = 'the_valid_token'
+      @event.update(download_token: token)
+      get :download, params: {id: @event.to_param, token: token}
+
+      expect(response).to redirect_to @event.download_url
     end
 
     specify 'If token DOES NOT match @event.download_token, redirect' do

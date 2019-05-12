@@ -59,6 +59,13 @@ describe Event, type: :model do
         @event.local_time.strftime('%FT%T%z').should == '2000-12-12T09:00:00-0800'
       end
     end
+
+    describe '#download_url' do
+      it 'should return a url with the stream token' do
+        @event.download_url.should ==
+              "http://www.sonostreamlive.net:1935/vod/mp4:sonostream_#{@event.stream_token}.mp4/playlist.m3u8"
+      end
+    end
   end # Methods
 
   describe 'Idioms' do

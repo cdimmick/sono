@@ -9,7 +9,7 @@ class EventsController < ApplicationController
 
   def download
     if @event.download_token == params[:token]
-      #TODO
+      redirect_to @event.download_url
     else
       redirect_to root_path, alert: 'You are not allowed to view that resource.'
     end
