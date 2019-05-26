@@ -51,7 +51,7 @@ class FacilitiesController < ApplicationController
   def destroy
     @facility.destroy
     respond_to do |format|
-      format.html { redirect_to facilities_url, notice: 'Facility was successfully destroyed.' }
+      format.html { redirect_to facilities_url, notice: 'Facility was successfully removed.' }
       # format.json { head :no_content }
     end
   end
