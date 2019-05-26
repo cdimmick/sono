@@ -6,7 +6,7 @@ class ChargesController < ApplicationController
     @event = Event.find(params[:event_id])
 
     if @event.charges.count > 0
-      render json: {message: 'A copy of SonoStream has already beem purchased.'}
+      render json: {message: 'A copy of this Stream has already beem purchased.'}
       return
     end
 
@@ -48,7 +48,7 @@ class ChargesController < ApplicationController
   def destroy
     #TODO spec
     @charge.destroy
-    redirect_to charges_path, notice: 'Charge has been destroyed'
+    redirect_to charges_path, notice: 'Charge has been removed'
   end
 
   private
